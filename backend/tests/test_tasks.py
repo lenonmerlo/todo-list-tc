@@ -3,6 +3,7 @@ import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from tasks.models import Task, Category
+from unittest.mock import Mock, patch
 
 
 @pytest.fixture
@@ -90,3 +91,122 @@ def test_create_category(auth_client):
 def test_unauthenticated_access(client):
     response = client.get('/api/tasks/')
     assert response.status_code == 401
+
+@pytest.mark.django_db
+def test_shared_user_can_view_shared_task(auth_client, user):
+    shared_user = User.objects.create_user(
+        username='shareduser',
+        email='shared@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Shared task', owner=shared_user)
+    task.shared_with.add(user)
+
+    response = auth_client.get(f'/api/tasks/{task.id}/')
+
+    assert response.status_code == 200
+    assert response.data['title'] == 'Shared task'
+
+
+@pytest.mark.django_db
+def test_shared_user_cannot_update_shared_task(auth_client, user):
+    owner = User.objects.create_user(
+        username='owner',
+        email='owner@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Shared task', owner=owner)
+    task.shared_with.add(user)
+
+    response = auth_client.patch(f'/api/tasks/{task.id}/', {
+        'title': 'Changed by shared user'
+    }, format='json')
+
+    assert response.status_code == 403
+    task.refresh_from_db()
+    assert task.title == 'Shared task'
+
+
+@pytest.mark.django_db
+def test_shared_user_cannot_delete_shared_task(auth_client, user):
+    owner = User.objects.create_user(
+        username='owner',
+        email='owner@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Shared task', owner=owner)
+    task.shared_with.add(user)
+
+    response = auth_client.delete(f'/api/tasks/{task.id}/')
+
+    assert response.status_code == 403
+    assert Task.objects.filter(id=task.id).exists()
+
+@pytest.mark.django_db
+def test_cannot_create_task_with_another_users_category(auth_client):
+    other_user = User.objects.create_user(
+        username='otheruser',
+        email='other@test.com',
+        password='testpass123'
+    )
+    category = Category.objects.create(name='Private category', owner=other_user)
+
+    response = auth_client.post('/api/tasks/', {
+        'title': 'Invalid task',
+        'category': category.id
+    }, format='json')
+
+    assert response.status_code == 400
+    assert Task.objects.filter(title='Invalid task').exists() is False
+
+@pytest.mark.django_db
+def test_address_lookup_returns_viacep_data(auth_client):
+    viacep_payload = {
+        'cep': '01001-000',
+        'logradouro': 'Praça da Sé',
+        'bairro': 'Sé',
+        'localidade': 'São Paulo',
+        'uf': 'SP',
+    }
+
+    mocked_response = Mock()
+    mocked_response.json.return_value = viacep_payload
+    mocked_response.raise_for_status.return_value = None
+
+    with patch('tasks.integrations.requests.get', return_value=mocked_response):
+        response = auth_client.get('/api/address/01001000/')
+
+    assert response.status_code == 200
+    assert response.data['cep'] == '01001-000'
+    assert response.data['localidade'] == 'São Paulo'
+
+
+@pytest.mark.django_db
+def test_address_lookup_returns_404_when_cep_is_not_found(auth_client):
+    mocked_response = Mock()
+    mocked_response.json.return_value = {'erro': True}
+    mocked_response.raise_for_status.return_value = None
+
+    with patch('tasks.integrations.requests.get', return_value=mocked_response):
+        response = auth_client.get('/api/address/00000000/')
+
+    assert response.status_code == 404
+    assert response.data['error'] == 'CEP 00000000 não encontrado.'
+
+@pytest.mark.django_db
+def test_task_response_includes_shared_user_details(auth_client):
+    shared_user = User.objects.create_user(
+        username='shareduser',
+        email='shared@test.com',
+        password='testpass123'
+    )
+
+    response = auth_client.post('/api/tasks/', {
+        'title': 'Task with shared details',
+        'shared_with': [shared_user.id]
+    }, format='json')
+
+    assert response.status_code == 201
+    assert response.data['shared_with'] == [shared_user.id]
+    assert response.data['shared_with_details'][0]['id'] == shared_user.id
+    assert response.data['shared_with_details'][0]['username'] == 'shareduser'
