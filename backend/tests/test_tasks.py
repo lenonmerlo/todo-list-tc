@@ -3,6 +3,7 @@ import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from tasks.models import Task, Category
+from unittest.mock import Mock, patch
 
 
 @pytest.fixture
@@ -157,3 +158,37 @@ def test_cannot_create_task_with_another_users_category(auth_client):
 
     assert response.status_code == 400
     assert Task.objects.filter(title='Invalid task').exists() is False
+
+@pytest.mark.django_db
+def test_address_lookup_returns_viacep_data(auth_client):
+    viacep_payload = {
+        'cep': '01001-000',
+        'logradouro': 'Praça da Sé',
+        'bairro': 'Sé',
+        'localidade': 'São Paulo',
+        'uf': 'SP',
+    }
+
+    mocked_response = Mock()
+    mocked_response.json.return_value = viacep_payload
+    mocked_response.raise_for_status.return_value = None
+
+    with patch('tasks.integrations.requests.get', return_value=mocked_response):
+        response = auth_client.get('/api/address/01001000/')
+
+    assert response.status_code == 200
+    assert response.data['cep'] == '01001-000'
+    assert response.data['localidade'] == 'São Paulo'
+
+
+@pytest.mark.django_db
+def test_address_lookup_returns_404_when_cep_is_not_found(auth_client):
+    mocked_response = Mock()
+    mocked_response.json.return_value = {'erro': True}
+    mocked_response.raise_for_status.return_value = None
+
+    with patch('tasks.integrations.requests.get', return_value=mocked_response):
+        response = auth_client.get('/api/address/00000000/')
+
+    assert response.status_code == 404
+    assert response.data['error'] == 'CEP 00000000 não encontrado.'
