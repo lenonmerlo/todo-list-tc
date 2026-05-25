@@ -1,8 +1,11 @@
 # tasks/views.py
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .models import Task, Category
 from .serializers import TaskSerializer, CategorySerializer
+from .integrations import fetch_address_by_cep
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -28,7 +31,6 @@ class TaskViewSet(viewsets.ModelViewSet):
         queryset = Task.objects.filter(owner=user) | Task.objects.filter(shared_with=user)
         queryset = queryset.distinct()
 
-        # filtros via query params
         completed = self.request.query_params.get('completed')
         category = self.request.query_params.get('category')
         priority = self.request.query_params.get('priority')
@@ -44,3 +46,18 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def address_lookup(request, cep):
+    try:
+        data = fetch_address_by_cep(cep)
+        return Response(data)
+    except ValueError as e:
+        return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+    except Exception:
+        return Response(
+            {'error': 'Erro ao consultar o ViaCEP.'},
+            status=status.HTTP_502_BAD_GATEWAY
+        )
