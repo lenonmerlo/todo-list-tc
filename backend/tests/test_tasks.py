@@ -192,3 +192,21 @@ def test_address_lookup_returns_404_when_cep_is_not_found(auth_client):
 
     assert response.status_code == 404
     assert response.data['error'] == 'CEP 00000000 não encontrado.'
+
+@pytest.mark.django_db
+def test_task_response_includes_shared_user_details(auth_client):
+    shared_user = User.objects.create_user(
+        username='shareduser',
+        email='shared@test.com',
+        password='testpass123'
+    )
+
+    response = auth_client.post('/api/tasks/', {
+        'title': 'Task with shared details',
+        'shared_with': [shared_user.id]
+    }, format='json')
+
+    assert response.status_code == 201
+    assert response.data['shared_with'] == [shared_user.id]
+    assert response.data['shared_with_details'][0]['id'] == shared_user.id
+    assert response.data['shared_with_details'][0]['username'] == 'shareduser'

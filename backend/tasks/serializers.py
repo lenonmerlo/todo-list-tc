@@ -10,6 +10,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'created_at')
         read_only_fields = ('id', 'created_at')
 
+class SharedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
+
 
 class TaskSerializer(serializers.ModelSerializer):
     shared_with = serializers.PrimaryKeyRelatedField(
@@ -17,13 +22,18 @@ class TaskSerializer(serializers.ModelSerializer):
         queryset=User.objects.all(),
         required=False,
     )
+    shared_with_details = SharedUserSerializer(
+        source='shared_with',
+        many=True,
+        read_only=True,
+    )
 
     class Meta:
         model = Task
         fields = (
             'id', 'title', 'description', 'completed',
             'priority', 'due_date', 'category', 'shared_with',
-            'created_at', 'updated_at',
+            'shared_with_details', 'created_at', 'updated_at',
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
 
