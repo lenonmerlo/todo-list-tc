@@ -140,3 +140,20 @@ def test_shared_user_cannot_delete_shared_task(auth_client, user):
 
     assert response.status_code == 403
     assert Task.objects.filter(id=task.id).exists()
+
+@pytest.mark.django_db
+def test_cannot_create_task_with_another_users_category(auth_client):
+    other_user = User.objects.create_user(
+        username='otheruser',
+        email='other@test.com',
+        password='testpass123'
+    )
+    category = Category.objects.create(name='Private category', owner=other_user)
+
+    response = auth_client.post('/api/tasks/', {
+        'title': 'Invalid task',
+        'category': category.id
+    }, format='json')
+
+    assert response.status_code == 400
+    assert Task.objects.filter(title='Invalid task').exists() is False
