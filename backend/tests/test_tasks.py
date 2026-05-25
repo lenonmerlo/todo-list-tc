@@ -90,3 +90,53 @@ def test_create_category(auth_client):
 def test_unauthenticated_access(client):
     response = client.get('/api/tasks/')
     assert response.status_code == 401
+
+@pytest.mark.django_db
+def test_shared_user_can_view_shared_task(auth_client, user):
+    shared_user = User.objects.create_user(
+        username='shareduser',
+        email='shared@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Shared task', owner=shared_user)
+    task.shared_with.add(user)
+
+    response = auth_client.get(f'/api/tasks/{task.id}/')
+
+    assert response.status_code == 200
+    assert response.data['title'] == 'Shared task'
+
+
+@pytest.mark.django_db
+def test_shared_user_cannot_update_shared_task(auth_client, user):
+    owner = User.objects.create_user(
+        username='owner',
+        email='owner@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Shared task', owner=owner)
+    task.shared_with.add(user)
+
+    response = auth_client.patch(f'/api/tasks/{task.id}/', {
+        'title': 'Changed by shared user'
+    }, format='json')
+
+    assert response.status_code == 403
+    task.refresh_from_db()
+    assert task.title == 'Shared task'
+
+
+@pytest.mark.django_db
+def test_shared_user_cannot_delete_shared_task(auth_client, user):
+    owner = User.objects.create_user(
+        username='owner',
+        email='owner@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Shared task', owner=owner)
+    task.shared_with.add(user)
+
+    response = auth_client.delete(f'/api/tasks/{task.id}/')
+
+    assert response.status_code == 403
+    assert Task.objects.filter(id=task.id).exists()

@@ -3,6 +3,8 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.db.models import Q
+from .permissions import IsTaskOwnerOrReadOnly
 from .models import Task, Category
 from .serializers import TaskSerializer, CategorySerializer
 from .integrations import fetch_address_by_cep
@@ -21,14 +23,16 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsTaskOwnerOrReadOnly)
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('title', 'description')
     ordering_fields = ('created_at', 'due_date', 'priority')
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Task.objects.filter(owner=user) | Task.objects.filter(shared_with=user)
+        queryset = Task.objects.filter(
+            Q(owner=user) | Q(shared_with=user)
+        ).distinct()
         queryset = queryset.distinct()
 
         completed = self.request.query_params.get('completed')
