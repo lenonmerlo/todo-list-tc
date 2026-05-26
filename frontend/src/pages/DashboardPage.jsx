@@ -5,6 +5,7 @@ import kawaiiStar from "../assets/kawaii-star.svg";
 import kawaiiSun from "../assets/kawaii-sun.svg";
 import MiniCalendar from "../components/MiniCalendar";
 import "../components/MiniCalendar.css";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 import WeatherWidget from "../components/WeatherWidget";
 import "../components/WeatherWidget.css";
 import { useAuth } from "../contexts/useAuth";
@@ -186,6 +187,7 @@ function DashboardPage() {
             <div className="dashboard-weather-slot">
               <WeatherWidget />
             </div>
+            <ThemeSwitcher className="dashboard-theme-switcher" compact />
             <button className="dashboard-logout" type="button" onClick={logout}>
               Sair
             </button>
@@ -364,14 +366,14 @@ function DashboardPage() {
                         )}
 
                         {shareDisplayUsers.length > 0 && (
-                          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                            <span className="text-[11px] font-semibold text-slate-500">
+                          <div className="dashboard-share-row">
+                            <span className="dashboard-share-label">
                               Compartilhado com:
                             </span>
                             {shareDisplayUsers.map((sharedUser) => (
                               <span
                                 key={sharedUser.id}
-                                className="rounded-full border border-fuchsia-200 bg-fuchsia-50 px-2 py-0.5 text-[11px] font-bold text-fuchsia-700"
+                                className="dashboard-share-chip"
                               >
                                 @{sharedUser.username}
                               </span>
@@ -390,25 +392,25 @@ function DashboardPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-start gap-2">
+                      <div className="dashboard-task-actions">
                         {sharingTaskId === task.id ? (
-                          <div className="flex items-center gap-1.5 rounded-xl border border-pink-200/80 bg-white/90 px-2 py-1 shadow-sm">
+                          <div className="dashboard-share-panel">
                             <input
                               value={shareUsername}
                               onChange={(e) => setShareUsername(e.target.value)}
                               placeholder="username"
-                              className="w-24 rounded-md border border-pink-200 bg-white px-2 py-1 text-xs text-slate-700 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200"
+                              className="dashboard-share-input"
                             />
                             <button
                               type="button"
                               onClick={() => handleShare(task.id)}
-                              className="rounded-md bg-gradient-to-r from-pink-500 to-violet-500 px-2 py-1 text-xs font-bold text-white transition hover:brightness-105"
+                              className="dashboard-share-submit"
                             >
                               ok
                             </button>
                             {shareMsg && (
                               <span
-                                className={`text-xs font-semibold ${shareError ? "text-rose-500" : "text-emerald-600"}`}
+                                className={`dashboard-share-message ${shareError ? "error" : "success"}`}
                               >
                                 {shareMsg}
                               </span>
@@ -416,7 +418,7 @@ function DashboardPage() {
                             <button
                               type="button"
                               onClick={resetShareState}
-                              className="text-xs text-slate-400 transition hover:text-slate-600"
+                              className="dashboard-share-close"
                               aria-label="Fechar compartilhamento"
                             >
                               ✕
@@ -432,7 +434,7 @@ function DashboardPage() {
                               setShareError(false);
                             }}
                             title="Compartilhar"
-                            className="rounded-full p-1 text-lg leading-none text-slate-300 transition hover:bg-pink-50 hover:text-pink-400"
+                            className="dashboard-share-trigger"
                             aria-label="Compartilhar tarefa"
                           >
                             👤

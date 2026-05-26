@@ -1,11 +1,9 @@
 .mini-cal {
-  border: 1px solid rgba(255, 151, 201, 0.35);
+  border: 1px solid var(--app-surface-border);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--app-surface);
   backdrop-filter: blur(8px);
-  box-shadow:
-    0 14px 34px rgba(130, 57, 112, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  box-shadow: var(--app-surface-shadow);
   padding: 14px 15px;
 }
 
@@ -19,7 +17,7 @@
 .mini-cal-title {
   font-size: 12px;
   font-weight: 800;
-  color: #a33a74;
+  color: var(--app-primary-strong);
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
@@ -27,8 +25,12 @@
 .mini-cal-nav {
   border: 0;
   border-radius: 10px;
-  background: #ffe9f3;
-  color: #c54e92;
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 14%,
+    var(--app-surface) 86%
+  );
+  color: var(--app-primary-strong);
   width: 24px;
   height: 24px;
   line-height: 1;
@@ -41,7 +43,11 @@
 }
 
 .mini-cal-nav:hover {
-  background: #ffdceb;
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 20%,
+    var(--app-surface) 80%
+  );
   transform: translateY(-1px);
 }
 
@@ -55,13 +61,13 @@
 .mini-cal-day-name {
   font-size: 10px;
   font-weight: 800;
-  color: #d57ab0;
+  color: var(--app-text-muted);
   padding: 3px 0;
 }
 
 .mini-cal-day {
   font-size: 12px;
-  color: #4d5a77;
+  color: var(--app-text);
   padding: 5px 2px;
   border-radius: 10px;
   min-height: 26px;
@@ -78,11 +84,11 @@
   width: 5px;
   height: 5px;
   border-radius: 999px;
-  background: #f255a4;
+  background: var(--app-primary);
 }
 
 .mini-cal-day:hover:not(.empty) {
-  background: #fde8f3;
+  background: var(--app-selected-bg);
 }
 
 .mini-cal-day.empty {
@@ -90,7 +96,7 @@
 }
 
 .mini-cal-day.today {
-  background: linear-gradient(135deg, #ff67b0, #8c73ff);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
   color: #fff;
   font-weight: 800;
   border-radius: 999px;

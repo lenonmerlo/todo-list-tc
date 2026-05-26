@@ -4,16 +4,16 @@
 }
 
 .form-field-label {
-  color: #3c4a67;
+  color: var(--app-text);
   font-size: 13px;
   font-weight: 700;
 }
 
 .form-field-input {
-  border: 1px solid #e4c6d9;
+  border: 1px solid var(--app-input-border);
   border-radius: 14px;
-  background: #fffafd;
-  color: #0f172a;
+  background: var(--app-input-bg);
+  color: var(--app-text);
   padding: 12px 12px;
   outline: 0;
   transition:
@@ -22,19 +22,23 @@
 }
 
 .form-field-input::placeholder {
-  color: #a6a7bf;
+  color: color-mix(in srgb, var(--app-text-muted) 70%, white 30%);
 }
 
 .form-field-input:focus {
-  border-color: #cc73a7;
-  box-shadow: 0 0 0 4px rgba(255, 92, 168, 0.16);
+  border-color: var(--app-primary-strong);
+  box-shadow: 0 0 0 4px var(--app-focus-ring);
 }
 
 .segmented {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-radius: 14px;
-  background: #f2dae8;
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 18%,
+    var(--app-surface) 82%
+  );
   padding: 4px;
   margin-bottom: 2px;
 }
@@ -43,7 +47,7 @@
   border: 0;
   border-radius: 11px;
   background: transparent;
-  color: #6d5673;
+  color: var(--app-text-muted);
   padding: 8px 10px;
   font-size: 13px;
   font-weight: 800;
@@ -54,11 +58,12 @@
 }
 
 .segmented-button:hover {
-  color: #2f2645;
+  color: var(--app-title);
 }
 
 .segmented-button.active {
-  background: #ffffff;
-  color: #2f2645;
-  box-shadow: 0 3px 12px rgba(162, 62, 127, 0.14);
+  background: var(--app-surface);
+  color: var(--app-title);
+  box-shadow: 0 3px 12px
+    color-mix(in srgb, var(--app-primary) 30%, transparent 70%);
 }

@@ -3,11 +3,7 @@
   overflow: clip;
   min-height: 100dvh;
   padding: clamp(14px, 2vw, 24px);
-  background:
-    radial-gradient(circle at 10% 14%, #ffd6ea 0%, transparent 44%),
-    radial-gradient(circle at 88% 90%, #ffe7cf 0%, transparent 42%),
-    radial-gradient(circle at 76% 22%, #e9ddff 0%, transparent 34%),
-    linear-gradient(160deg, #fff8fc 0%, #fdf5ff 48%, #f8f2ff 100%);
+  background: var(--app-page-gradient);
 }
 
 .dashboard-page::before,
@@ -26,8 +22,8 @@
   right: -120px;
   background: radial-gradient(
     circle,
-    rgba(255, 131, 196, 0.22) 0%,
-    rgba(255, 131, 196, 0) 70%
+    var(--app-overlay-start) 0%,
+    transparent 70%
   );
 }
 
@@ -38,8 +34,8 @@
   left: -90px;
   background: radial-gradient(
     circle,
-    rgba(167, 139, 250, 0.2) 0%,
-    rgba(167, 139, 250, 0) 70%
+    var(--app-overlay-end) 0%,
+    transparent 70%
   );
 }
 
@@ -48,7 +44,7 @@
   z-index: 0;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 10px 18px rgba(244, 133, 193, 0.18));
+  filter: drop-shadow(0 10px 18px var(--app-deco-shadow));
 }
 
 .dashboard-deco-star {
@@ -85,13 +81,11 @@
 }
 
 .dashboard-header {
-  border: 1px solid rgba(255, 151, 201, 0.35);
+  border: 1px solid var(--app-surface-border);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--app-surface);
   backdrop-filter: blur(10px);
-  box-shadow:
-    0 18px 44px rgba(130, 57, 112, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: var(--app-surface-shadow);
   padding: 22px 24px;
   display: flex;
   justify-content: space-between;
@@ -101,10 +95,14 @@
 
 .dashboard-kicker {
   display: inline-block;
-  border: 1px solid #f5b0d2;
+  border: 1px solid color-mix(in srgb, var(--app-primary) 35%, white 65%);
   border-radius: 999px;
-  background: #ffe9f3;
-  color: #a33a74;
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 14%,
+    var(--app-surface) 86%
+  );
+  color: var(--app-primary-strong);
   padding: 8px 14px;
   font-size: 12px;
   font-weight: 700;
@@ -114,15 +112,15 @@
 
 .dashboard-title {
   margin-top: 10px;
-  font-family: "M PLUS Rounded 1c", "Nunito", "Segoe UI", sans-serif;
-  color: #17223d;
+  font-family: var(--app-font-display);
+  color: var(--app-title);
   font-size: clamp(30px, 4vw, 44px);
   line-height: 1.08;
 }
 
 .dashboard-subtitle {
   margin-top: 8px;
-  color: #5b6680;
+  color: var(--app-text-muted);
   font-size: 16px;
 }
 
@@ -144,10 +142,18 @@
   justify-content: flex-end;
 }
 
+.dashboard-theme-switcher {
+  min-width: 0;
+}
+
+.dashboard-theme-switcher .theme-switcher-label {
+  display: none;
+}
+
 .dashboard-logout {
   border: 0;
   border-radius: 14px;
-  background: linear-gradient(135deg, #ff67b0, #8c73ff);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
   color: #fff;
   font-size: 15px;
   font-weight: 800;
@@ -156,7 +162,8 @@
   transition:
     transform 160ms ease,
     box-shadow 160ms ease;
-  box-shadow: 0 10px 24px rgba(255, 92, 168, 0.26);
+  box-shadow: 0 10px 24px
+    color-mix(in srgb, var(--app-primary) 34%, transparent 66%);
 }
 
 .dashboard-logout:hover {
@@ -177,13 +184,11 @@
 }
 
 .dashboard-card {
-  border: 1px solid rgba(255, 151, 201, 0.3);
+  border: 1px solid var(--app-surface-border);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--app-surface);
   backdrop-filter: blur(8px);
-  box-shadow:
-    0 14px 34px rgba(130, 57, 112, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  box-shadow: var(--app-surface-shadow);
 }
 
 .dashboard-sidebar-card {
@@ -191,7 +196,7 @@
 }
 
 .dashboard-section-title {
-  color: #7d3c70;
+  color: var(--app-primary-strong);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -213,19 +218,23 @@
   background: transparent;
   text-align: left;
   padding: 9px 10px;
-  color: #37415c;
+  color: var(--app-text);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .dashboard-category-btn:hover {
-  background: #f6ecf6;
+  background: color-mix(
+    in srgb,
+    var(--app-selected-bg) 70%,
+    var(--app-surface) 30%
+  );
 }
 
 .dashboard-category-btn.active {
-  background: #fee4f1;
-  color: #a33a74;
+  background: var(--app-selected-bg);
+  color: var(--app-selected-text);
 }
 
 .dashboard-inline-form {
@@ -236,10 +245,10 @@
 }
 
 .dashboard-input {
-  border: 1px solid #e4c6d9;
+  border: 1px solid var(--app-input-border);
   border-radius: 12px;
-  background: #fffafd;
-  color: #0f172a;
+  background: var(--app-input-bg);
+  color: var(--app-text);
   padding: 11px 12px;
   outline: 0;
   font-size: 14px;
@@ -249,12 +258,12 @@
 }
 
 .dashboard-input::placeholder {
-  color: #a6a7bf;
+  color: color-mix(in srgb, var(--app-text-muted) 72%, white 28%);
 }
 
 .dashboard-input:focus {
-  border-color: #cc73a7;
-  box-shadow: 0 0 0 4px rgba(255, 92, 168, 0.16);
+  border-color: var(--app-primary-strong);
+  box-shadow: 0 0 0 4px var(--app-focus-ring);
 }
 
 .dashboard-add-btn {
@@ -262,7 +271,7 @@
   border-radius: 12px;
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #ff67b0, #8c73ff);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
   color: #fff;
   font-size: 18px;
   font-weight: 800;
@@ -291,7 +300,7 @@
 .dashboard-primary-btn {
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ff67b0, #8c73ff);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
   color: #fff;
   font-size: 14px;
   font-weight: 800;
@@ -323,10 +332,10 @@
 }
 
 .dashboard-error {
-  border: 1px solid #fecaca;
+  border: 1px solid color-mix(in srgb, #ef4444 40%, transparent 60%);
   border-radius: 12px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: color-mix(in srgb, #ef4444 15%, var(--app-surface) 85%);
+  color: color-mix(in srgb, #ef4444 75%, #111827 25%);
   padding: 10px 12px;
   font-size: 14px;
   font-weight: 700;
@@ -335,14 +344,14 @@
 .dashboard-feedback {
   text-align: center;
   padding: 20px;
-  color: #7c8499;
+  color: var(--app-text-muted);
   font-weight: 700;
 }
 
 .dashboard-empty {
   padding: 24px;
   text-align: center;
-  color: #7c8499;
+  color: var(--app-text-muted);
   font-weight: 700;
 }
 
@@ -355,10 +364,11 @@
 }
 
 .dashboard-task-item {
-  border: 1px solid rgba(255, 151, 201, 0.3);
+  border: 1px solid var(--app-surface-border);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 10px 24px rgba(130, 57, 112, 0.08);
+  background: color-mix(in srgb, var(--app-surface) 96%, transparent 4%);
+  box-shadow: 0 10px 24px
+    color-mix(in srgb, var(--app-primary) 14%, transparent 86%);
   padding: 13px 14px;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -374,7 +384,7 @@
   margin-top: 2px;
   width: 16px;
   height: 16px;
-  accent-color: #b94895;
+  accent-color: var(--app-primary-strong);
   cursor: pointer;
 }
 
@@ -383,7 +393,7 @@
 }
 
 .dashboard-task-title {
-  color: #24324f;
+  color: var(--app-text);
   font-size: 15px;
   font-weight: 800;
 }
@@ -394,7 +404,7 @@
 
 .dashboard-task-desc {
   margin-top: 4px;
-  color: #65708a;
+  color: var(--app-text-muted);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -404,6 +414,30 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.dashboard-share-row {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.dashboard-share-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--app-text-muted);
+}
+
+.dashboard-share-chip {
+  border-radius: 999px;
+  border: 1px solid var(--app-share-chip-border);
+  background: var(--app-share-chip-bg);
+  color: var(--app-share-chip-text);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .dashboard-badge {
@@ -429,8 +463,8 @@
 }
 
 .dashboard-badge.category {
-  color: #5b6680;
-  background: #f1eef6;
+  color: var(--app-chip-text);
+  background: var(--app-chip-bg);
 }
 
 .dashboard-delete-btn {
@@ -438,11 +472,112 @@
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: #ffe8f1;
-  color: #c83e85;
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 14%,
+    var(--app-surface) 86%
+  );
+  color: var(--app-primary-strong);
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
+}
+
+.dashboard-task-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.dashboard-share-panel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--app-input-border);
+  background: var(--app-input-bg);
+  padding: 5px 7px;
+  box-shadow: 0 4px 10px
+    color-mix(in srgb, var(--app-primary) 16%, transparent 84%);
+}
+
+.dashboard-share-input {
+  width: 96px;
+  border-radius: 8px;
+  border: 1px solid var(--app-input-border);
+  background: color-mix(in srgb, var(--app-surface) 90%, transparent 10%);
+  color: var(--app-text);
+  padding: 4px 8px;
+  font-size: 12px;
+  outline: none;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.dashboard-share-input:focus {
+  border-color: var(--app-primary-strong);
+  box-shadow: 0 0 0 3px var(--app-focus-ring);
+}
+
+.dashboard-share-submit {
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
+  color: #fff;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.dashboard-share-submit:hover {
+  filter: brightness(1.06);
+}
+
+.dashboard-share-message {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-share-message.success {
+  color: var(--app-success-text);
+}
+
+.dashboard-share-message.error {
+  color: var(--app-danger-text);
+}
+
+.dashboard-share-close {
+  border: 0;
+  background: transparent;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px;
+}
+
+.dashboard-share-close:hover {
+  color: var(--app-text);
+}
+
+.dashboard-share-trigger {
+  border: 0;
+  border-radius: 999px;
+  padding: 4px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--app-text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.dashboard-share-trigger:hover {
+  color: var(--app-primary-strong);
+  background: color-mix(in srgb, var(--app-primary) 14%, transparent 86%);
 }
 
 .dashboard-pagination {
@@ -454,10 +589,10 @@
 }
 
 .dashboard-page-btn {
-  border: 1px solid #e6c7dc;
+  border: 1px solid var(--app-input-border);
   border-radius: 10px;
-  background: #fff;
-  color: #4b3559;
+  background: var(--app-surface);
+  color: var(--app-text);
   font-weight: 700;
   font-size: 14px;
   width: 34px;
@@ -471,7 +606,7 @@
 }
 
 .dashboard-page-indicator {
-  color: #5b6680;
+  color: var(--app-text-muted);
   font-size: 14px;
   font-weight: 700;
 }
@@ -487,6 +622,10 @@
 
   .dashboard-form-row {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-share-panel {
+    flex-wrap: wrap;
   }
 
   .dashboard-deco-star {

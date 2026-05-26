@@ -2,10 +2,17 @@
 @import "tailwindcss";
 
 :root {
-  font-family: "Nunito", "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(
+    --app-font-body,
+    "Nunito",
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif
+  );
   line-height: 1.5;
   font-weight: 400;
-  color: #0f172a;
+  color: var(--app-text, #0f172a);
   background-color: #f8f2ff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,7 +32,16 @@ body,
 }
 
 body {
+  color: var(--app-text, #0f172a);
   background-color: #f8f2ff;
+  font-family: var(
+    --app-font-body,
+    "Nunito",
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif
+  );
 }
 
 #root {
