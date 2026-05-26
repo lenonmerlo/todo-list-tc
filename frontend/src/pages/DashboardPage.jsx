@@ -91,6 +91,42 @@ function DashboardPage() {
     setShareError(false);
   }
 
+  function getShareDisplayUsers(task) {
+    const viewerUsername = (user?.username || "").toLowerCase();
+    const sharedUsers = Array.isArray(task.shared_with_details)
+      ? task.shared_with_details
+      : [];
+    const ownerUser = task.owner_details;
+    const ownerUsername = (ownerUser?.username || "").toLowerCase();
+    const isOwnerViewing = ownerUsername && ownerUsername === viewerUsername;
+
+    if (isOwnerViewing) {
+      return sharedUsers;
+    }
+
+    const visibleSharedUsers = sharedUsers.filter(
+      (sharedUser) =>
+        (sharedUser?.username || "").toLowerCase() !== viewerUsername,
+    );
+
+    if (!ownerUser) {
+      return visibleSharedUsers;
+    }
+
+    const mergedUsers = [ownerUser, ...visibleSharedUsers];
+    const uniqueUsers = [];
+    const seenKeys = new Set();
+
+    for (const item of mergedUsers) {
+      const key = item?.id ?? item?.username;
+      if (!key || seenKeys.has(key)) continue;
+      seenKeys.add(key);
+      uniqueUsers.push(item);
+    }
+
+    return uniqueUsers;
+  }
+
   async function handleShare(taskId) {
     if (!shareUsername.trim()) return;
 
@@ -301,115 +337,119 @@ function DashboardPage() {
               </div>
             ) : (
               <ul className="dashboard-task-list">
-                {tasks.map((task) => (
-                  <li
-                    key={task.id}
-                    className={`dashboard-task-item ${task.completed ? "completed" : ""}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => toggleTask(task)}
-                      className="dashboard-checkbox"
-                    />
-                    <div className="dashboard-task-content">
-                      <p
-                        className={`dashboard-task-title ${task.completed ? "done" : ""}`}
-                      >
-                        {task.title}
-                      </p>
-                      {task.description && (
-                        <p className="dashboard-task-desc">
-                          {task.description}
-                        </p>
-                      )}
+                {tasks.map((task) => {
+                  const shareDisplayUsers = getShareDisplayUsers(task);
 
-                      {task.shared_with_details?.length > 0 && (
-                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                          <span className="text-[11px] font-semibold text-slate-500">
-                            Compartilhado com:
-                          </span>
-                          {task.shared_with_details.map((sharedUser) => (
-                            <span
-                              key={sharedUser.id}
-                              className="rounded-full border border-fuchsia-200 bg-fuchsia-50 px-2 py-0.5 text-[11px] font-bold text-fuchsia-700"
-                            >
-                              @{sharedUser.username}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="dashboard-task-badges">
-                        <span
-                          className={`dashboard-badge priority ${PRIORITY_CLASS[task.priority] ?? "medium"}`}
+                  return (
+                    <li
+                      key={task.id}
+                      className={`dashboard-task-item ${task.completed ? "completed" : ""}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => toggleTask(task)}
+                        className="dashboard-checkbox"
+                      />
+                      <div className="dashboard-task-content">
+                        <p
+                          className={`dashboard-task-title ${task.completed ? "done" : ""}`}
                         >
-                          {PRIORITY_LABEL[task.priority]}
-                        </span>
-                        <span className="dashboard-badge category">
-                          {getCategoryName(task.category)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      {sharingTaskId === task.id ? (
-                        <div className="flex items-center gap-1.5 rounded-xl border border-pink-200/80 bg-white/90 px-2 py-1 shadow-sm">
-                          <input
-                            value={shareUsername}
-                            onChange={(e) => setShareUsername(e.target.value)}
-                            placeholder="username"
-                            className="w-24 rounded-md border border-pink-200 bg-white px-2 py-1 text-xs text-slate-700 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleShare(task.id)}
-                            className="rounded-md bg-gradient-to-r from-pink-500 to-violet-500 px-2 py-1 text-xs font-bold text-white transition hover:brightness-105"
-                          >
-                            ok
-                          </button>
-                          {shareMsg && (
-                            <span
-                              className={`text-xs font-semibold ${shareError ? "text-rose-500" : "text-emerald-600"}`}
-                            >
-                              {shareMsg}
+                          {task.title}
+                        </p>
+                        {task.description && (
+                          <p className="dashboard-task-desc">
+                            {task.description}
+                          </p>
+                        )}
+
+                        {shareDisplayUsers.length > 0 && (
+                          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            <span className="text-[11px] font-semibold text-slate-500">
+                              Compartilhado com:
                             </span>
-                          )}
+                            {shareDisplayUsers.map((sharedUser) => (
+                              <span
+                                key={sharedUser.id}
+                                className="rounded-full border border-fuchsia-200 bg-fuchsia-50 px-2 py-0.5 text-[11px] font-bold text-fuchsia-700"
+                              >
+                                @{sharedUser.username}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="dashboard-task-badges">
+                          <span
+                            className={`dashboard-badge priority ${PRIORITY_CLASS[task.priority] ?? "medium"}`}
+                          >
+                            {PRIORITY_LABEL[task.priority]}
+                          </span>
+                          <span className="dashboard-badge category">
+                            {getCategoryName(task.category)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        {sharingTaskId === task.id ? (
+                          <div className="flex items-center gap-1.5 rounded-xl border border-pink-200/80 bg-white/90 px-2 py-1 shadow-sm">
+                            <input
+                              value={shareUsername}
+                              onChange={(e) => setShareUsername(e.target.value)}
+                              placeholder="username"
+                              className="w-24 rounded-md border border-pink-200 bg-white px-2 py-1 text-xs text-slate-700 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleShare(task.id)}
+                              className="rounded-md bg-gradient-to-r from-pink-500 to-violet-500 px-2 py-1 text-xs font-bold text-white transition hover:brightness-105"
+                            >
+                              ok
+                            </button>
+                            {shareMsg && (
+                              <span
+                                className={`text-xs font-semibold ${shareError ? "text-rose-500" : "text-emerald-600"}`}
+                              >
+                                {shareMsg}
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={resetShareState}
+                              className="text-xs text-slate-400 transition hover:text-slate-600"
+                              aria-label="Fechar compartilhamento"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
                           <button
                             type="button"
-                            onClick={resetShareState}
-                            className="text-xs text-slate-400 transition hover:text-slate-600"
-                            aria-label="Fechar compartilhamento"
+                            onClick={() => {
+                              setSharingTaskId(task.id);
+                              setShareUsername("");
+                              setShareMsg("");
+                              setShareError(false);
+                            }}
+                            title="Compartilhar"
+                            className="rounded-full p-1 text-lg leading-none text-slate-300 transition hover:bg-pink-50 hover:text-pink-400"
+                            aria-label="Compartilhar tarefa"
                           >
-                            ✕
+                            👤
                           </button>
-                        </div>
-                      ) : (
+                        )}
+
                         <button
                           type="button"
-                          onClick={() => {
-                            setSharingTaskId(task.id);
-                            setShareUsername("");
-                            setShareMsg("");
-                            setShareError(false);
-                          }}
-                          title="Compartilhar"
-                          className="rounded-full p-1 text-lg leading-none text-slate-300 transition hover:bg-pink-50 hover:text-pink-400"
-                          aria-label="Compartilhar tarefa"
+                          onClick={() => deleteTask(task.id)}
+                          className="dashboard-delete-btn"
                         >
-                          👤
+                          ×
                         </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => deleteTask(task.id)}
-                        className="dashboard-delete-btn"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
 

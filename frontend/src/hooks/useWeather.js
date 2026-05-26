@@ -50,7 +50,7 @@ export function useWeather() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [savedCity]);
 
   return { weather, city, cep, setCep, loading, error, lookupCep };
 }
