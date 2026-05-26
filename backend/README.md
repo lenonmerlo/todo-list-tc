@@ -33,6 +33,17 @@ API REST do projeto **Dia Leve**, desenvolvida com Django + Django REST Framewor
 - Pytest + pytest-django
 - Docker / Docker Compose
 
+## 2.1 Arquitetura e decisoes de design
+
+- API organizada em apps de dominio (`accounts` e `tasks`) para separar autenticacao e regra de negocio.
+- Uso de DRF ViewSets para reduzir boilerplate de CRUD mantendo legibilidade.
+- Validacoes de dominio em serializers (ex.: categoria deve pertencer ao usuario autenticado).
+- Permissoes explicitas para compartilhamento:
+  - dono pode editar/deletar/compartilhar,
+  - usuario compartilhado possui apenas leitura.
+- Integracao externa isolada em `tasks/integrations.py` para facilitar testes com mock e reduzir acoplamento.
+- Praticas de qualidade adotadas: KISS, DRY e responsabilidade unica por modulo.
+
 ## 3. Estrutura de pastas
 
 ```text
@@ -180,6 +191,7 @@ Authorization: Bearer <access_token>
 
 - `GET/POST /api/tasks/`
 - `GET/PATCH/PUT/DELETE /api/tasks/{id}/`
+- `POST /api/tasks/{id}/share/`
 - `GET/POST /api/categories/`
 - `GET/PATCH/PUT/DELETE /api/categories/{id}/`
 
