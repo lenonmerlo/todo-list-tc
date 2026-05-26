@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "node ./node_modules/jest/bin/jest.js tests/e2e.test.js --testTimeout=60000"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
@@ -26,6 +27,12 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "jest": "^30.4.2",
+    "selenium-webdriver": "^4.44.0",
     "vite": "^8.0.12"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 60000
   }
 }
