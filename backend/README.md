@@ -2,13 +2,19 @@
 
 ![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-6.0-0C4B33?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.17-A30000?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.16-A30000?logo=django&logoColor=white)
 ![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Pytest](https://img.shields.io/badge/Pytest-9-0A9EDC?logo=pytest&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 API REST do projeto **Dia Leve**, desenvolvida com Django + Django REST Framework, autenticacao JWT e persistencia em PostgreSQL.
+
+## Ambiente de producao
+
+- Backend (Railway): https://todo-list-tc-production.up.railway.app/
+- API base em producao: https://todo-list-tc-production.up.railway.app/api
+- Healthcheck: https://todo-list-tc-production.up.railway.app/healthz/
 
 ## 1. Funcionalidades
 
@@ -27,7 +33,7 @@ API REST do projeto **Dia Leve**, desenvolvida com Django + Django REST Framewor
 
 - Python 3.13
 - Django 6.0.5
-- Django REST Framework 3.17.1
+- Django REST Framework 3.16.1
 - djangorestframework-simplejwt 5.5.1
 - PostgreSQL 16
 - Pytest + pytest-django
@@ -161,18 +167,22 @@ python manage.py runserver
 Do `requirements.txt`:
 
 - Django==6.0.5
-- djangorestframework==3.17.1
-- djangorestframework_simplejwt==5.5.1
-- psycopg2-binary==2.9.12
+- djangorestframework==3.16.1
+- djangorestframework-simplejwt==5.5.1
+- psycopg2-binary==2.9.10
 - pytest==9.0.3
 - pytest-django==4.12.0
-- requests==2.34.2
+- requests==2.32.5
 
 ## 9. Endpoints
 
 Base URL:
 
 - `http://localhost:8000/api`
+
+Base URL em producao:
+
+- `https://todo-list-tc-production.up.railway.app/api`
 
 Header para rotas protegidas:
 
@@ -317,6 +327,20 @@ Rodar via Docker:
 ```bash
 docker compose run --rm backend pytest tests/ -v
 ```
+
+## 16. Deploy (Railway)
+
+Configuracao usada para producao:
+
+- `backend/railway.toml` forca build por Dockerfile.
+- Start command executa migracoes e sobe Gunicorn com porta dinamica (`$PORT`).
+- Healthcheck configurado em `/healthz/`.
+
+Fluxo resumido de deploy:
+
+1. Push para branch remota.
+2. Railway constroi a imagem a partir de `backend/Dockerfile`.
+3. Aplicacao roda `python manage.py migrate` e inicia Gunicorn.
 
 Cobertura funcional da suite:
 
