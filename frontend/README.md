@@ -16,12 +16,12 @@ Este frontend consome a API Django em `http://localhost:8000/api` e entrega os f
 - Cadastro e login com JWT.
 - Exibicao de erros de API no formulario de autenticacao.
 - Dashboard autenticado com:
-	- listagem de tarefas,
-	- criacao/atualizacao/remocao,
-	- filtro por status,
-	- busca textual,
-	- filtro por categoria,
-	- paginacao.
+  - listagem de tarefas,
+  - criacao/atualizacao/remocao,
+  - filtro por status,
+  - busca textual,
+  - filtro por categoria,
+  - paginacao.
 - Criacao de categorias no proprio painel.
 
 ## 2. Tecnologias
@@ -31,6 +31,17 @@ Este frontend consome a API Django em `http://localhost:8000/api` e entrega os f
 - Axios
 - ESLint
 - Jest + Selenium WebDriver para E2E
+
+## 2.1 Arquitetura e decisoes de design
+
+- Estrutura por responsabilidade:
+  - `services/` concentra chamadas HTTP e contratos com a API.
+  - `hooks/` concentra estado assinado e regras de fluxo.
+  - `pages/` compoe as telas de autenticacao e dashboard.
+  - `components/` contem UI reutilizavel (ex.: clima, mini calendario).
+- Separacao de concerns para facilitar manutencao, testes e evolucao incremental.
+- Estado de tarefas robusto em hook dedicado com controle de concorrencia (abort/cancelamento de requisicoes).
+- Praticas adotadas: KISS, DRY e componentes pequenos com responsabilidade unica.
 
 ## 3. Estrutura principal
 
@@ -130,9 +141,11 @@ No dashboard:
 - Criar tarefa com titulo, descricao, prioridade e categoria opcional.
 - Marcar/desmarcar como concluida.
 - Excluir tarefa.
+- Compartilhar tarefa por username e visualizar compartilhamentos persistentes no card.
 - Filtrar por status e categoria.
 - Buscar por texto.
 - Navegar por paginas.
+- Visualizar clima por CEP e mini calendario com destaque de dias com prazo (`due_date`).
 
 ## 10. Testes E2E
 

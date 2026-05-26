@@ -28,7 +28,34 @@ O projeto esta dividido em:
 - Compartilhamento de tarefas com outros usuarios.
 - Filtros de tarefas (status, categoria, prioridade, busca, paginacao).
 - Integracao com ViaCEP (`/api/address/{cep}/`).
+- Widget de clima por CEP (ViaCEP + OpenWeatherMap).
+- Mini calendario no dashboard com marcacao de dias com prazo (`due_date`).
 - Interface frontend com fluxos de autenticacao e dashboard completos.
+
+## 3.1 Decisoes de design e arquitetura
+
+Principais decisoes adotadas no projeto:
+
+- Arquitetura em camadas no backend:
+  - ViewSets para orquestracao HTTP.
+  - Serializers para validacao e transformacao de dados.
+  - Models para regras de persistencia.
+  - Integracao externa isolada em `tasks/integrations.py`.
+- Frontend com separacao por responsabilidade:
+  - `services/` para acesso HTTP.
+  - `hooks/` para estado e regras de fluxo.
+  - `pages/` para composicao de tela.
+  - `components/` para elementos reutilizaveis.
+- Seguranca e autorizacao:
+  - JWT para autenticacao stateless.
+  - Permissoes de dono e usuario compartilhado nas tarefas.
+- Principios aplicados:
+  - KISS: endpoints e fluxos diretos, sem acoplamento desnecessario.
+  - DRY: centralizacao de API client e hooks reutilizaveis.
+  - SOLID (aplicado de forma pragmatica): responsabilidade unica por modulo.
+- Testabilidade:
+  - Pytest com cenarios de autorizacao, filtros e integracao externa com mock.
+  - Selenium E2E cobrindo fluxos essenciais do frontend.
 
 ## 3. Arquitetura
 
@@ -175,6 +202,7 @@ Recursos:
 
 - `GET/POST /api/tasks/`
 - `GET/PATCH/PUT/DELETE /api/tasks/{id}/`
+- `POST /api/tasks/{id}/share/`
 - `GET/POST /api/categories/`
 - `GET/PATCH/PUT/DELETE /api/categories/{id}/`
 - `GET /api/address/{cep}/`
