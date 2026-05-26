@@ -30,12 +30,14 @@ O projeto esta dividido em:
 - Login com JWT (access + refresh token).
 - Endpoint de usuario autenticado (`/api/auth/me/`).
 - CRUD de tarefas.
+- Edicao de tarefas inline (titulo, descricao, prioridade e categoria).
 - CRUD de categorias por usuario.
 - Compartilhamento de tarefas com outros usuarios.
 - Filtros de tarefas (status, categoria, prioridade, busca, paginacao).
 - Integracao com ViaCEP (`/api/address/{cep}/`).
 - Widget de clima por CEP (ViaCEP + OpenWeatherMap).
 - Mini calendario no dashboard com marcacao de dias com prazo (`due_date`).
+- Sistema de temas com 3 opcoes visuais (Kawaii, Classico e Energia), com seletor no login e no dashboard.
 - Interface frontend com fluxos de autenticacao e dashboard completos.
 
 ## 3.1 Decisoes de design e arquitetura
@@ -52,6 +54,10 @@ Principais decisoes adotadas no projeto:
   - `hooks/` para estado e regras de fluxo.
   - `pages/` para composicao de tela.
   - `components/` para elementos reutilizaveis.
+- Personalizacao de experiencia:
+  - temas controlados por provider global,
+  - tokens CSS por tema para manter consistencia visual,
+  - persistencia da escolha no `localStorage`.
 - Seguranca e autorizacao:
   - JWT para autenticacao stateless.
   - Permissoes de dono e usuario compartilhado nas tarefas.
