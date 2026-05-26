@@ -9,40 +9,40 @@
   align-items: center;
   gap: 7px;
   padding: 6px 8px;
-  border: 1px solid rgba(245, 176, 210, 0.55);
+  border: 1px solid color-mix(in srgb, var(--app-primary) 30%, transparent 70%);
   border-radius: 999px;
-  background: linear-gradient(135deg, #fff9fd 0%, #fff1f8 100%);
+  background: color-mix(in srgb, var(--app-surface) 96%, white 4%);
   box-shadow:
-    0 6px 14px rgba(236, 72, 153, 0.12),
+    0 6px 14px color-mix(in srgb, var(--app-primary) 24%, transparent 76%),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .weather-label {
   font-size: 11px;
-  color: #b13e7d;
+  color: var(--app-primary-strong);
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 .weather-input {
-  border: 1px solid #f3bfdc;
+  border: 1px solid var(--app-input-border);
   border-radius: 999px;
   padding: 5px 11px;
   font-size: 13px;
   width: 108px;
-  background: #fff;
-  color: #673250;
+  background: var(--app-input-bg);
+  color: var(--app-text);
   outline: none;
 }
 
 .weather-input:focus {
-  border-color: #e86db0;
-  box-shadow: 0 0 0 3px rgba(248, 187, 217, 0.42);
+  border-color: var(--app-primary-strong);
+  box-shadow: 0 0 0 3px var(--app-focus-ring);
 }
 
 .weather-btn {
-  background: linear-gradient(135deg, #ff67b0, #8c73ff);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
   color: white;
   border: none;
   border-radius: 999px;
@@ -53,12 +53,14 @@
   transition:
     transform 0.2s,
     box-shadow 0.2s;
-  box-shadow: 0 8px 16px rgba(195, 95, 221, 0.28);
+  box-shadow: 0 8px 16px
+    color-mix(in srgb, var(--app-primary) 36%, transparent 64%);
 }
 
 .weather-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(195, 95, 221, 0.34);
+  box-shadow: 0 10px 20px
+    color-mix(in srgb, var(--app-primary) 44%, transparent 56%);
 }
 
 .weather-info {
@@ -69,10 +71,10 @@
   cursor: pointer;
   padding: 8px 14px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #fff8fc 0%, #fdf2ff 100%);
-  border: 1px solid rgba(245, 176, 210, 0.55);
+  background: color-mix(in srgb, var(--app-surface) 96%, white 4%);
+  border: 1px solid color-mix(in srgb, var(--app-primary) 30%, transparent 70%);
   box-shadow:
-    0 8px 20px rgba(238, 130, 191, 0.2),
+    0 8px 20px color-mix(in srgb, var(--app-primary) 26%, transparent 74%),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition:
     transform 0.2s,
@@ -82,24 +84,33 @@
 .weather-info:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 10px 24px rgba(238, 130, 191, 0.26),
+    0 10px 24px color-mix(in srgb, var(--app-primary) 32%, transparent 68%),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .weather-empty {
-  border: 1px solid rgba(245, 176, 210, 0.65);
+  border: 1px solid color-mix(in srgb, var(--app-primary) 36%, transparent 64%);
   border-radius: 999px;
-  background: linear-gradient(135deg, #ffe9f4, #fbe4ff);
-  color: #a33a74;
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 14%,
+    var(--app-surface) 86%
+  );
+  color: var(--app-primary-strong);
   padding: 7px 12px;
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 7px 15px rgba(238, 130, 191, 0.22);
+  box-shadow: 0 7px 15px
+    color-mix(in srgb, var(--app-primary) 24%, transparent 76%);
 }
 
 .weather-empty:hover {
-  background: linear-gradient(135deg, #ffe0ef, #f6dcff);
+  background: color-mix(
+    in srgb,
+    var(--app-primary) 20%,
+    var(--app-surface) 80%
+  );
 }
 
 .weather-emoji {
@@ -115,7 +126,9 @@
   width: 36px;
   height: 36px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(214, 86, 154, 0.22));
+  filter: drop-shadow(
+    0 2px 4px color-mix(in srgb, var(--app-primary) 35%, transparent 65%)
+  );
 }
 
 .weather-temp {
@@ -123,28 +136,28 @@
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.03em;
-  color: #cc3f8f;
+  color: var(--app-primary-strong);
 }
 .weather-city {
   font-size: 15px;
   font-weight: 700;
-  color: #7b4a67;
+  color: var(--app-text);
 }
 .weather-desc {
   font-size: 13px;
-  color: #8f95ab;
+  color: var(--app-text-muted);
   font-weight: 700;
   text-transform: capitalize;
 }
 .weather-loading,
 .weather-error {
   font-size: 11px;
-  color: #7c5570;
+  color: var(--app-text);
   font-weight: 700;
   padding: 7px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(245, 176, 210, 0.6);
-  background: rgba(255, 248, 252, 0.95);
+  border: 1px solid color-mix(in srgb, var(--app-primary) 30%, transparent 70%);
+  background: color-mix(in srgb, var(--app-surface) 94%, white 6%);
   white-space: nowrap;
   cursor: pointer;
 }

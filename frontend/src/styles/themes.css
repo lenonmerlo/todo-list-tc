@@ -1,0 +1,113 @@
+[data-theme="kawaii"] {
+  --app-font-body: "Nunito", "Segoe UI", sans-serif;
+  --app-font-display: "M PLUS Rounded 1c", "Nunito", "Segoe UI", sans-serif;
+  --app-text: #24324f;
+  --app-title: #16213d;
+  --app-text-muted: #5b6680;
+  --app-primary: #ff67b0;
+  --app-primary-strong: #cc4a92;
+  --app-accent: #8c73ff;
+  --app-surface: rgba(255, 255, 255, 0.9);
+  --app-surface-border: rgba(255, 151, 201, 0.32);
+  --app-surface-shadow: 0 16px 36px rgba(130, 57, 112, 0.14);
+  --app-input-bg: #fffafd;
+  --app-input-border: #e4c6d9;
+  --app-focus-ring: rgba(255, 92, 168, 0.16);
+  --app-selected-bg: #fee4f1;
+  --app-selected-text: #a33a74;
+  --app-chip-bg: #f1eef6;
+  --app-chip-text: #5b6680;
+  --app-share-chip-bg: #fde7f3;
+  --app-share-chip-border: #f7b7d8;
+  --app-share-chip-text: #9f2e75;
+  --app-success-text: #047857;
+  --app-danger-text: #be123c;
+  --app-page-gradient:
+    radial-gradient(circle at 10% 14%, #ffd6ea 0%, transparent 44%),
+    radial-gradient(circle at 88% 90%, #ffe7cf 0%, transparent 42%),
+    radial-gradient(circle at 76% 22%, #e9ddff 0%, transparent 34%),
+    linear-gradient(160deg, #fff8fc 0%, #fdf5ff 48%, #f8f2ff 100%);
+  --app-overlay-start: rgba(255, 131, 196, 0.22);
+  --app-overlay-end: rgba(167, 139, 250, 0.2);
+  --app-deco-shadow: rgba(244, 133, 193, 0.2);
+}
+
+[data-theme="classic"] {
+  --app-font-body: "Nunito", "Segoe UI", sans-serif;
+  --app-font-display: "Nunito", "Segoe UI", sans-serif;
+  --app-text: #1f2937;
+  --app-title: #0f172a;
+  --app-text-muted: #64748b;
+  --app-primary: #2563eb;
+  --app-primary-strong: #1e40af;
+  --app-accent: #0ea5e9;
+  --app-surface: rgba(255, 255, 255, 0.96);
+  --app-surface-border: rgba(148, 163, 184, 0.33);
+  --app-surface-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  --app-input-bg: #f8fafc;
+  --app-input-border: #cbd5e1;
+  --app-focus-ring: rgba(37, 99, 235, 0.2);
+  --app-selected-bg: #e0edff;
+  --app-selected-text: #1e3a8a;
+  --app-chip-bg: #e5edf7;
+  --app-chip-text: #334155;
+  --app-share-chip-bg: #e6efff;
+  --app-share-chip-border: #b9d0ff;
+  --app-share-chip-text: #1e40af;
+  --app-success-text: #047857;
+  --app-danger-text: #be123c;
+  --app-page-gradient:
+    radial-gradient(circle at 10% 14%, #dbeafe 0%, transparent 44%),
+    radial-gradient(circle at 88% 90%, #f1f5f9 0%, transparent 42%),
+    radial-gradient(circle at 76% 22%, #dbeafe 0%, transparent 34%),
+    linear-gradient(160deg, #f8fafc 0%, #f1f5f9 48%, #e2e8f0 100%);
+  --app-overlay-start: rgba(59, 130, 246, 0.16);
+  --app-overlay-end: rgba(14, 165, 233, 0.16);
+  --app-deco-shadow: rgba(59, 130, 246, 0.16);
+}
+
+[data-theme="energy"] {
+  --app-font-body: "Nunito", "Segoe UI", sans-serif;
+  --app-font-display: "Nunito", "Segoe UI", sans-serif;
+  --app-text: #e2e8f0;
+  --app-title: #f8fafc;
+  --app-text-muted: #94a3b8;
+  --app-primary: #f97316;
+  --app-primary-strong: #ea580c;
+  --app-accent: #06b6d4;
+  --app-surface: rgba(15, 23, 42, 0.86);
+  --app-surface-border: rgba(71, 85, 105, 0.72);
+  --app-surface-shadow: 0 18px 36px rgba(2, 6, 23, 0.5);
+  --app-input-bg: rgba(15, 23, 42, 0.78);
+  --app-input-border: #334155;
+  --app-focus-ring: rgba(249, 115, 22, 0.25);
+  --app-selected-bg: rgba(124, 45, 18, 0.48);
+  --app-selected-text: #fdba74;
+  --app-chip-bg: rgba(51, 65, 85, 0.7);
+  --app-chip-text: #cbd5e1;
+  --app-share-chip-bg: rgba(30, 41, 59, 0.9);
+  --app-share-chip-border: rgba(71, 85, 105, 0.92);
+  --app-share-chip-text: #7dd3fc;
+  --app-success-text: #34d399;
+  --app-danger-text: #fb7185;
+  --app-page-gradient:
+    radial-gradient(
+      circle at 14% 16%,
+      rgba(6, 182, 212, 0.18) 0%,
+      transparent 44%
+    ),
+    radial-gradient(
+      circle at 88% 90%,
+      rgba(249, 115, 22, 0.22) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 76% 22%,
+      rgba(37, 99, 235, 0.16) 0%,
+      transparent 34%
+    ),
+    linear-gradient(160deg, #020617 0%, #0f172a 50%, #111827 100%);
+  --app-overlay-start: rgba(249, 115, 22, 0.2);
+  --app-overlay-end: rgba(6, 182, 212, 0.2);
+  --app-deco-shadow: rgba(249, 115, 22, 0.28);
+}

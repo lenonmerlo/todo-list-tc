@@ -1,0 +1,64 @@
+.theme-switcher {
+  display: grid;
+  gap: 8px;
+}
+
+.theme-switcher-label {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theme-switcher-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.theme-switcher-button {
+  border: 1px solid var(--app-input-border);
+  border-radius: 999px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.theme-switcher-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--app-primary);
+}
+
+.theme-switcher-button.active {
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
+  border-color: transparent;
+  color: #fff;
+}
+
+.theme-switcher-compact .theme-switcher-label {
+  font-size: 10px;
+}
+
+.theme-switcher-compact .theme-switcher-button {
+  font-size: 11px;
+  padding: 7px 10px;
+}
+
+@media (max-width: 640px) {
+  .theme-switcher-button span:last-child {
+    display: none;
+  }
+}

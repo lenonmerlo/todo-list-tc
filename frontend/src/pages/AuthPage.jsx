@@ -5,6 +5,7 @@ import kawaiiStar from "../assets/kawaii-star.svg";
 import kawaiiSun from "../assets/kawaii-sun.svg";
 import FormField from "../components/FormField";
 import SegmentedControl from "../components/SegmentedControl";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 import { useAuth } from "../contexts/useAuth";
 import "./AuthPage.css";
 
@@ -212,6 +213,8 @@ function AuthPage() {
                   ? "Criar conta"
                   : "Entrar"}
             </button>
+
+            <ThemeSwitcher className="auth-theme-switcher" />
           </div>
         </form>
       </section>
