@@ -210,3 +210,51 @@ def test_task_response_includes_shared_user_details(auth_client):
     assert response.data['shared_with'] == [shared_user.id]
     assert response.data['shared_with_details'][0]['id'] == shared_user.id
     assert response.data['shared_with_details'][0]['username'] == 'shareduser'
+    assert response.data['owner_details']['username'] == 'testuser'
+
+
+@pytest.mark.django_db
+def test_owner_can_share_task_with_existing_user(auth_client, user):
+    receiver = User.objects.create_user(
+        username='receiver',
+        email='receiver@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Share me', owner=user)
+
+    response = auth_client.post(f'/api/tasks/{task.id}/share/', {
+        'username': 'receiver'
+    }, format='json')
+
+    assert response.status_code == 200
+    assert response.data['message'] == 'Tarefa compartilhada com receiver.'
+    task.refresh_from_db()
+    assert task.shared_with.filter(id=receiver.id).exists()
+
+
+@pytest.mark.django_db
+def test_non_owner_cannot_share_task(auth_client, user):
+    owner = User.objects.create_user(
+        username='owner2',
+        email='owner2@test.com',
+        password='testpass123'
+    )
+    task = Task.objects.create(title='Private', owner=owner)
+
+    response = auth_client.post(f'/api/tasks/{task.id}/share/', {
+        'username': 'owner2'
+    }, format='json')
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_share_returns_404_for_unknown_username(auth_client, user):
+    task = Task.objects.create(title='Task', owner=user)
+
+    response = auth_client.post(f'/api/tasks/{task.id}/share/', {
+        'username': 'missinguser'
+    }, format='json')
+
+    assert response.status_code == 404
+    assert response.data['error'] == 'Usuario nao encontrado.'
