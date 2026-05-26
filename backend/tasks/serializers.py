@@ -27,13 +27,18 @@ class TaskSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
+    owner_details = SharedUserSerializer(
+        source='owner',
+        read_only=True,
+    )
 
     class Meta:
         model = Task
         fields = (
             'id', 'title', 'description', 'completed',
             'priority', 'due_date', 'category', 'shared_with',
-            'shared_with_details', 'created_at', 'updated_at',
+            'shared_with_details', 'owner_details',
+            'created_at', 'updated_at',
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
 
