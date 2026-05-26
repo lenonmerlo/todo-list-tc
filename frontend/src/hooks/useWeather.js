@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 
 const OW_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
@@ -23,8 +22,12 @@ export function useWeather() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get(`/address/${value}/`);
-      const cityName = res.data.localidade;
+      const res = await fetch(`https://viacep.com.br/ws/${value}/json/`);
+      if (!res.ok) throw new Error("Erro ao consultar CEP");
+      const data = await res.json();
+      if (data.erro || !data.localidade) throw new Error("CEP não encontrado");
+
+      const cityName = data.localidade;
       setCity(cityName);
       localStorage.setItem("user_cep", value);
       localStorage.setItem("user_city", cityName);
