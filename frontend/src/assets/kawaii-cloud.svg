@@ -1,0 +1,15 @@
+<svg width="260" height="190" viewBox="0 0 260 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cloudGradient" x1="38" y1="20" x2="222" y2="165" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFE9FA"/>
+    </linearGradient>
+  </defs>
+  <path d="M72 151C41 151 18 132 18 107C18 86 33 69 57 65C62 40 84 22 112 22C136 22 157 35 166 55C170 54 174 53 179 53C209 53 233 74 233 99C233 123 211 142 184 144H72V151Z" fill="url(#cloudGradient)" stroke="#F4B8D8" stroke-width="4"/>
+  <circle cx="95" cy="97" r="6" fill="#7A4A6B"/>
+  <circle cx="129" cy="97" r="6" fill="#7A4A6B"/>
+  <path d="M95 116C102 123 122 123 129 116" stroke="#7A4A6B" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="81" cy="110" r="5" fill="#FF9BC9"/>
+  <circle cx="143" cy="110" r="5" fill="#FF9BC9"/>
+  <path d="M194 146C194 138 201 131 210 131C219 131 226 138 226 146C226 157 214 165 210 168C206 165 194 157 194 146Z" fill="#FF76B6"/>
+</svg>

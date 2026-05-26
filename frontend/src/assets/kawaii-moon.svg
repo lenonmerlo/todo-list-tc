@@ -1,0 +1,15 @@
+<svg width="210" height="210" viewBox="0 0 210 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="moonBody" x1="64" y1="45" x2="152" y2="165" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF6D9"/>
+      <stop offset="1" stop-color="#FFDFAE"/>
+    </linearGradient>
+  </defs>
+  <path d="M147 31C120 24 91 31 71 50C44 76 40 118 61 148C80 176 113 188 144 178C117 173 93 156 80 131C62 99 71 61 101 38C114 28 130 24 147 31Z" fill="url(#moonBody)" stroke="#F2BA7E" stroke-width="5"/>
+  <circle cx="92" cy="102" r="5" fill="#7A4A3A"/>
+  <circle cx="118" cy="102" r="5" fill="#7A4A3A"/>
+  <path d="M92 120C97 126 113 126 118 120" stroke="#7A4A3A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="82" cy="114" r="4" fill="#FF9BBE"/>
+  <circle cx="126" cy="114" r="4" fill="#FF9BBE"/>
+  <path d="M158 78L163 89L175 92L166 101L168 114L158 108L148 114L150 101L141 92L153 89L158 78Z" fill="#FFE7A6" stroke="#F2BA7E" stroke-width="3" stroke-linejoin="round"/>
+</svg>

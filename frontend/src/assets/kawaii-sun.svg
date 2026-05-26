@@ -1,0 +1,24 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sunCore" x1="62" y1="50" x2="156" y2="168" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE58F"/>
+      <stop offset="1" stop-color="#FFB95E"/>
+    </linearGradient>
+  </defs>
+  <circle cx="110" cy="110" r="48" fill="url(#sunCore)" stroke="#F09A53" stroke-width="5"/>
+  <g stroke="#F6A764" stroke-width="8" stroke-linecap="round">
+    <path d="M110 20V42"/>
+    <path d="M110 178V200"/>
+    <path d="M20 110H42"/>
+    <path d="M178 110H200"/>
+    <path d="M45 45L60 60"/>
+    <path d="M160 160L175 175"/>
+    <path d="M160 60L175 45"/>
+    <path d="M45 175L60 160"/>
+  </g>
+  <circle cx="96" cy="108" r="5" fill="#7A4A3A"/>
+  <circle cx="124" cy="108" r="5" fill="#7A4A3A"/>
+  <path d="M96 127C101 133 119 133 124 127" stroke="#7A4A3A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="86" cy="121" r="4.5" fill="#FF9BBE"/>
+  <circle cx="134" cy="121" r="4.5" fill="#FF9BBE"/>
+</svg>

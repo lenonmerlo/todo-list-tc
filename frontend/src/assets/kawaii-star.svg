@@ -1,0 +1,22 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="starGradient" x1="43" y1="34" x2="182" y2="182" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE28A"/>
+      <stop offset="1" stop-color="#FFC36A"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="220" height="220" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="110" cy="110" r="88" fill="#FFE9F6"/>
+  <path filter="url(#glow)" d="M110 38L126 83L173 84L136 113L149 159L110 131L71 159L84 113L47 84L94 83L110 38Z" fill="url(#starGradient)" stroke="#F6A15E" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="95" cy="106" r="6" fill="#73453A"/>
+  <circle cx="126" cy="106" r="6" fill="#73453A"/>
+  <path d="M95 126C101 133 119 133 126 126" stroke="#73453A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="83" cy="120" r="5" fill="#FF9EBE"/>
+  <circle cx="138" cy="120" r="5" fill="#FF9EBE"/>
+</svg>
