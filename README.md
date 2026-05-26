@@ -10,6 +10,12 @@
 
 Aplicacao full stack para gerenciamento de tarefas, com autenticacao JWT, categorias, filtros, compartilhamento de tarefas e interface web moderna para login/cadastro e dashboard.
 
+## Ambiente de producao
+
+- Frontend (Vercel): https://todo-list-tc.vercel.app/
+- Backend (Railway): https://todo-list-tc-production.up.railway.app/
+- API base em producao: https://todo-list-tc-production.up.railway.app/api
+
 ## 1. Visao geral
 
 O projeto esta dividido em:
@@ -191,6 +197,10 @@ Base URL local:
 
 - `http://localhost:8000/api`
 
+Base URL producao:
+
+- `https://todo-list-tc-production.up.railway.app/api`
+
 Autenticacao:
 
 - `POST /api/auth/register/`
@@ -207,17 +217,23 @@ Recursos:
 - `GET/PATCH/PUT/DELETE /api/categories/{id}/`
 - `GET /api/address/{cep}/`
 
-## 11. Deploy opcional e estrategia de entrega
+## 11. Deploy e estrategia de entrega
 
-Conforme alinhado com o recrutamento, nao foi disponibilizado ambiente proprio da empresa para deploy em AWS/Azure.
+Deploy publicado para demonstracao:
 
-Dessa forma, a estrategia adotada e totalmente valida para avaliacao tecnica:
+- Frontend em Vercel: https://todo-list-tc.vercel.app/
+- Backend em Railway: https://todo-list-tc-production.up.railway.app/
 
-- Entrega da aplicacao dockerizada.
-- Instrucoes completas de execucao no README.
-- Opcionalmente, publicacao de demonstracao em ambiente gratuito de preferencia do candidato.
+Detalhes de arquitetura de deploy:
 
-Isso garante reproducibilidade do ambiente e facilita a analise do time tecnico.
+- Backend publicado via Dockerfile no Railway (configurado em `backend/railway.toml`).
+- Healthcheck do backend em `/healthz/` e rota raiz `/` retornando status de aplicacao.
+- Frontend configurado para:
+  - usar `VITE_API_BASE_URL` quando definida,
+  - usar backend Railway automaticamente em build de producao,
+  - manter `http://localhost:8000/api` no desenvolvimento local.
+
+Essa estrategia garante reproducibilidade local (Docker Compose) e tambem uma URL publica para avaliacao funcional.
 
 ## 12. Estrutura de diretorios
 

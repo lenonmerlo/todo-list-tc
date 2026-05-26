@@ -9,9 +9,15 @@
 
 Aplicacao web do projeto **Dia Leve**. Esta SPA e responsavel pelo fluxo de autenticacao (login/cadastro) e pelo painel de tarefas com filtros, categorias, paginacao e operacoes de CRUD.
 
+## Ambiente de producao
+
+- Frontend (Vercel): https://todo-list-tc.vercel.app/
+- Backend/API (Railway): https://todo-list-tc-production.up.railway.app/
+- API base em producao: https://todo-list-tc-production.up.railway.app/api
+
 ## 1. Visao geral
 
-Este frontend consome a API Django em `http://localhost:8000/api` e entrega os fluxos:
+Este frontend consome a API Django e entrega os fluxos:
 
 - Cadastro e login com JWT.
 - Exibicao de erros de API no formulario de autenticacao.
@@ -118,7 +124,10 @@ Frontend disponivel em:
 
 O cliente HTTP usa `axios` com:
 
-- `baseURL`: `http://localhost:8000/api`
+- `baseURL` dinamica por ambiente:
+  - `VITE_API_BASE_URL` (quando definida)
+  - producao: `https://todo-list-tc-production.up.railway.app/api`
+  - desenvolvimento local: `http://localhost:8000/api`
 - interceptor para enviar automaticamente `Authorization: Bearer <access_token>`
 
 Arquivos relevantes:
@@ -175,6 +184,7 @@ Erro de CORS ou falha de conexao:
 
 - confirme backend em `http://localhost:8000`.
 - valide se o `docker compose` subiu `backend` e `db`.
+- em producao, confirme `VITE_API_BASE_URL` no Vercel apontando para `https://todo-list-tc-production.up.railway.app/api`.
 
 Tela sem dados apos login:
 
@@ -188,8 +198,15 @@ Falha em E2E:
 
 ## 12. Deploy/demo
 
-Para avaliacao tecnica, este frontend pode ser executado localmente via Docker Compose com o backend.
-Caso deseje demonstracao publica, e possivel publicar em servicos gratuitos (ex.: Vercel/Netlify) apontando para uma API hospedada.
+Deploy ativo:
+
+- Frontend em Vercel: https://todo-list-tc.vercel.app/
+- Backend em Railway: https://todo-list-tc-production.up.railway.app/
+
+Configuracao recomendada no Vercel:
+
+- `VITE_API_BASE_URL=https://todo-list-tc-production.up.railway.app/api`
+- `VITE_OPENWEATHER_API_KEY=<sua_chave_openweather>`
 
 ## 13. Autor
 
