@@ -133,6 +133,14 @@ export function useTasks() {
     [fetchTasks],
   );
 
+  const updateTask = useCallback(
+    async (id, data) => {
+      await tasksService.update(id, data);
+      await fetchTasks();
+    },
+    [fetchTasks],
+  );
+
   const shareTask = useCallback(
     async (id, username) => {
       const response = await tasksService.share(id, username);
@@ -161,6 +169,7 @@ export function useTasks() {
     loading,
     error,
     createTask,
+    updateTask,
     toggleTask,
     deleteTask,
     shareTask,
