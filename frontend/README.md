@@ -29,6 +29,7 @@ Este frontend consome a API Django e entrega os fluxos:
   - filtro por categoria,
   - paginacao.
 - Criacao de categorias no proprio painel.
+- Sistema de temas com 3 opcoes (Kawaii, Classico e Energia), com troca em tempo real.
 
 ## 2. Tecnologias
 
@@ -45,9 +46,27 @@ Este frontend consome a API Django e entrega os fluxos:
   - `hooks/` concentra estado assinado e regras de fluxo.
   - `pages/` compoe as telas de autenticacao e dashboard.
   - `components/` contem UI reutilizavel (ex.: clima, mini calendario).
+- Theming orientado a tokens:
+  - provider global para controle de tema,
+  - variaveis CSS por tema para superfícies, tipografia, cores e contraste,
+  - persistencia em `localStorage` para manter preferencia entre sessoes.
 - Separacao de concerns para facilitar manutencao, testes e evolucao incremental.
 - Estado de tarefas robusto em hook dedicado com controle de concorrencia (abort/cancelamento de requisicoes).
 - Praticas adotadas: KISS, DRY e componentes pequenos com responsabilidade unica.
+
+## 2.2 Temas (UX)
+
+Temas disponiveis:
+
+- Kawaii
+- Classico
+- Energia
+
+Comportamento:
+
+- seletor visivel na tela de autenticacao e no dashboard,
+- aplicacao imediata do tema sem recarregar a pagina,
+- preferencia salva no navegador e reaplicada automaticamente.
 
 ## 3. Estrutura principal
 
