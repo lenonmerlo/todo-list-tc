@@ -3,6 +3,10 @@ import kawaiiCloud from "../assets/kawaii-cloud.svg";
 import kawaiiMoon from "../assets/kawaii-moon.svg";
 import kawaiiStar from "../assets/kawaii-star.svg";
 import kawaiiSun from "../assets/kawaii-sun.svg";
+import MiniCalendar from "../components/MiniCalendar";
+import "../components/MiniCalendar.css";
+import WeatherWidget from "../components/WeatherWidget";
+import "../components/WeatherWidget.css";
 import { useAuth } from "../contexts/useAuth";
 import { useTasks } from "../hooks/useTasks";
 import "./DashboardPage.css";
@@ -25,6 +29,7 @@ function DashboardPage() {
     createTask,
     toggleTask,
     deleteTask,
+    shareTask,
     createCategory,
   } = useTasks();
 
@@ -36,6 +41,10 @@ function DashboardPage() {
   });
   const [newCategory, setNewCategory] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [sharingTaskId, setSharingTaskId] = useState(null);
+  const [shareUsername, setShareUsername] = useState("");
+  const [shareMsg, setShareMsg] = useState("");
+  const [shareError, setShareError] = useState(false);
 
   const totalPages = Math.ceil(count / 10);
 
@@ -75,6 +84,32 @@ function DashboardPage() {
     return category?.name ?? "Sem categoria";
   }
 
+  function resetShareState() {
+    setSharingTaskId(null);
+    setShareUsername("");
+    setShareMsg("");
+    setShareError(false);
+  }
+
+  async function handleShare(taskId) {
+    if (!shareUsername.trim()) return;
+
+    try {
+      const response = await shareTask(taskId, shareUsername.trim());
+      setShareError(false);
+      setShareMsg(response?.data?.message || "Compartilhado!");
+
+      window.setTimeout(() => {
+        resetShareState();
+      }, 1500);
+    } catch (err) {
+      const message =
+        err?.response?.data?.error || "Nao foi possivel compartilhar a tarefa.";
+      setShareError(true);
+      setShareMsg(message);
+    }
+  }
+
   return (
     <main className="dashboard-page">
       <img
@@ -104,20 +139,27 @@ function DashboardPage() {
 
       <section className="dashboard-shell">
         <header className="dashboard-header">
-          <div>
+          <div className="dashboard-header-main">
             <span className="dashboard-kicker">Dia Leve</span>
             <h1 className="dashboard-title">Olá, {user.username}</h1>
             <p className="dashboard-subtitle">
               Seu painel para organizar o dia com leveza.
             </p>
           </div>
-          <button className="dashboard-logout" type="button" onClick={logout}>
-            Sair
-          </button>
+          <div className="dashboard-header-actions">
+            <div className="dashboard-weather-slot">
+              <WeatherWidget />
+            </div>
+            <button className="dashboard-logout" type="button" onClick={logout}>
+              Sair
+            </button>
+          </div>
         </header>
 
         <section className="dashboard-layout">
           <aside className="dashboard-sidebar">
+            <MiniCalendar tasks={tasks} />
+
             <div className="dashboard-card dashboard-sidebar-card">
               <span className="dashboard-section-title">Categorias</span>
               <ul className="dashboard-category-list">
@@ -281,6 +323,23 @@ function DashboardPage() {
                           {task.description}
                         </p>
                       )}
+
+                      {task.shared_with_details?.length > 0 && (
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                          <span className="text-[11px] font-semibold text-slate-500">
+                            Compartilhado com:
+                          </span>
+                          {task.shared_with_details.map((sharedUser) => (
+                            <span
+                              key={sharedUser.id}
+                              className="rounded-full border border-fuchsia-200 bg-fuchsia-50 px-2 py-0.5 text-[11px] font-bold text-fuchsia-700"
+                            >
+                              @{sharedUser.username}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="dashboard-task-badges">
                         <span
                           className={`dashboard-badge priority ${PRIORITY_CLASS[task.priority] ?? "medium"}`}
@@ -292,12 +351,63 @@ function DashboardPage() {
                         </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      className="dashboard-delete-btn"
-                    >
-                      ×
-                    </button>
+                    <div className="flex items-start gap-2">
+                      {sharingTaskId === task.id ? (
+                        <div className="flex items-center gap-1.5 rounded-xl border border-pink-200/80 bg-white/90 px-2 py-1 shadow-sm">
+                          <input
+                            value={shareUsername}
+                            onChange={(e) => setShareUsername(e.target.value)}
+                            placeholder="username"
+                            className="w-24 rounded-md border border-pink-200 bg-white px-2 py-1 text-xs text-slate-700 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleShare(task.id)}
+                            className="rounded-md bg-gradient-to-r from-pink-500 to-violet-500 px-2 py-1 text-xs font-bold text-white transition hover:brightness-105"
+                          >
+                            ok
+                          </button>
+                          {shareMsg && (
+                            <span
+                              className={`text-xs font-semibold ${shareError ? "text-rose-500" : "text-emerald-600"}`}
+                            >
+                              {shareMsg}
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={resetShareState}
+                            className="text-xs text-slate-400 transition hover:text-slate-600"
+                            aria-label="Fechar compartilhamento"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSharingTaskId(task.id);
+                            setShareUsername("");
+                            setShareMsg("");
+                            setShareError(false);
+                          }}
+                          title="Compartilhar"
+                          className="rounded-full p-1 text-lg leading-none text-slate-300 transition hover:bg-pink-50 hover:text-pink-400"
+                          aria-label="Compartilhar tarefa"
+                        >
+                          👤
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => deleteTask(task.id)}
+                        className="dashboard-delete-btn"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>

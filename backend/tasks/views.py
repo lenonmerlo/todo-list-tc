@@ -1,6 +1,7 @@
 # tasks/views.py
+from django.contrib.auth.models import User
 from rest_framework import viewsets, filters, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
@@ -50,6 +51,40 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def share(self, request, pk=None):
+        task = self.get_object()
+
+        if task.owner != request.user:
+            return Response(
+                {'error': 'Apenas o dono pode compartilhar a tarefa.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        username = request.data.get('username', '').strip()
+        if not username:
+            return Response(
+                {'error': 'Informe um username para compartilhar.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'Usuario nao encontrado.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if user == request.user:
+            return Response(
+                {'error': 'Nao e necessario compartilhar com voce mesmo.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        task.shared_with.add(user)
+        return Response({'message': f'Tarefa compartilhada com {username}.'})
 
 
 @api_view(['GET'])
