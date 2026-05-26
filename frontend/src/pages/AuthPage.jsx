@@ -19,6 +19,46 @@ const modeOptions = [
   { value: "register", label: "Cadastro" },
 ];
 
+function extractApiErrorMessage(error, isRegisterMode) {
+  const fallbackMessage = isRegisterMode
+    ? "Não foi possível criar a conta. Verifique os dados informados."
+    : "Não foi possível entrar. Verifique usuário e senha.";
+
+  const data = error?.response?.data;
+
+  if (!data) {
+    return fallbackMessage;
+  }
+
+  if (typeof data === "string" && data.trim()) {
+    return data;
+  }
+
+  if (typeof data.detail === "string" && data.detail.trim()) {
+    return data.detail;
+  }
+
+  const fieldMessages = Object.values(data)
+    .flatMap((value) => {
+      if (Array.isArray(value)) {
+        return value;
+      }
+
+      if (typeof value === "string") {
+        return [value];
+      }
+
+      return [];
+    })
+    .filter(Boolean);
+
+  if (fieldMessages.length > 0) {
+    return fieldMessages.join(" ");
+  }
+
+  return fallbackMessage;
+}
+
 function AuthPage() {
   const { login, register } = useAuth();
   const [mode, setMode] = useState("login");
@@ -59,12 +99,8 @@ function AuthPage() {
       }
 
       setForm(initialForm);
-    } catch {
-      setError(
-        isRegisterMode
-          ? "Não foi possível criar a conta. Verifique os dados informados."
-          : "Não foi possível entrar. Verifique usuário e senha.",
-      );
+    } catch (errorResponse) {
+      setError(extractApiErrorMessage(errorResponse, isRegisterMode));
     } finally {
       setIsSubmitting(false);
     }
