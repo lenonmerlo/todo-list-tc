@@ -133,6 +133,15 @@ export function useTasks() {
     [fetchTasks],
   );
 
+  const shareTask = useCallback(
+    async (id, username) => {
+      const response = await tasksService.share(id, username);
+      await fetchTasks();
+      return response;
+    },
+    [fetchTasks],
+  );
+
   const createCategory = useCallback(
     async (name) => {
       await categoriesService.create({ name });
@@ -154,6 +163,7 @@ export function useTasks() {
     createTask,
     toggleTask,
     deleteTask,
+    shareTask,
     createCategory,
   };
 }

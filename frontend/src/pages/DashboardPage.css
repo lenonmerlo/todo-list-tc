@@ -126,6 +126,24 @@
   font-size: 16px;
 }
 
+.dashboard-header-main {
+  min-width: 0;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard-weather-slot {
+  min-width: 180px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .dashboard-logout {
   border: 0;
   border-radius: 14px;
@@ -149,6 +167,12 @@
   display: grid;
   grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
   gap: 18px;
+}
+
+.dashboard-sidebar {
+  display: grid;
+  gap: 12px;
+  align-content: start;
 }
 
 .dashboard-card {
@@ -495,6 +519,19 @@
 
   .dashboard-header {
     padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dashboard-weather-slot {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
   }
 
   .dashboard-title {
