@@ -28,6 +28,7 @@ function DashboardPage() {
     loading,
     error,
     createTask,
+    updateTask,
     toggleTask,
     deleteTask,
     shareTask,
@@ -46,6 +47,15 @@ function DashboardPage() {
   const [shareUsername, setShareUsername] = useState("");
   const [shareMsg, setShareMsg] = useState("");
   const [shareError, setShareError] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingTask, setEditingTask] = useState({
+    title: "",
+    description: "",
+    priority: "medium",
+    category: "",
+  });
+  const [editingError, setEditingError] = useState("");
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   const totalPages = Math.ceil(count / 10);
 
@@ -90,6 +100,61 @@ function DashboardPage() {
     setShareUsername("");
     setShareMsg("");
     setShareError(false);
+  }
+
+  function isTaskOwner(task) {
+    const ownerUsername = (task?.owner_details?.username || "").toLowerCase();
+    const viewerUsername = (user?.username || "").toLowerCase();
+    return ownerUsername && ownerUsername === viewerUsername;
+  }
+
+  function startEditTask(task) {
+    if (!isTaskOwner(task)) return;
+
+    setEditingTaskId(task.id);
+    setEditingError("");
+    setEditingTask({
+      title: task.title || "",
+      description: task.description || "",
+      priority: task.priority || "medium",
+      category: task.category ? String(task.category) : "",
+    });
+  }
+
+  function cancelEditTask() {
+    setEditingTaskId(null);
+    setEditingError("");
+    setEditingTask({
+      title: "",
+      description: "",
+      priority: "medium",
+      category: "",
+    });
+  }
+
+  async function saveEditedTask(taskId) {
+    const title = editingTask.title.trim();
+    if (!title) {
+      setEditingError("Informe um titulo para a tarefa.");
+      return;
+    }
+
+    setIsSavingEdit(true);
+    setEditingError("");
+
+    try {
+      await updateTask(taskId, {
+        title,
+        description: editingTask.description,
+        priority: editingTask.priority,
+        category: editingTask.category ? Number(editingTask.category) : null,
+      });
+      cancelEditTask();
+    } catch {
+      setEditingError("Nao foi possivel salvar as alteracoes.");
+    } finally {
+      setIsSavingEdit(false);
+    }
   }
 
   function getShareDisplayUsers(task) {
@@ -354,45 +419,146 @@ function DashboardPage() {
                         className="dashboard-checkbox"
                       />
                       <div className="dashboard-task-content">
-                        <p
-                          className={`dashboard-task-title ${task.completed ? "done" : ""}`}
-                        >
-                          {task.title}
-                        </p>
-                        {task.description && (
-                          <p className="dashboard-task-desc">
-                            {task.description}
-                          </p>
-                        )}
-
-                        {shareDisplayUsers.length > 0 && (
-                          <div className="dashboard-share-row">
-                            <span className="dashboard-share-label">
-                              Compartilhado com:
-                            </span>
-                            {shareDisplayUsers.map((sharedUser) => (
-                              <span
-                                key={sharedUser.id}
-                                className="dashboard-share-chip"
-                              >
-                                @{sharedUser.username}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="dashboard-task-badges">
-                          <span
-                            className={`dashboard-badge priority ${PRIORITY_CLASS[task.priority] ?? "medium"}`}
+                        {editingTaskId === task.id ? (
+                          <form
+                            className="dashboard-edit-form"
+                            onSubmit={(event) => {
+                              event.preventDefault();
+                              void saveEditedTask(task.id);
+                            }}
                           >
-                            {PRIORITY_LABEL[task.priority]}
-                          </span>
-                          <span className="dashboard-badge category">
-                            {getCategoryName(task.category)}
-                          </span>
-                        </div>
+                            <input
+                              value={editingTask.title}
+                              onChange={(event) =>
+                                setEditingTask((current) => ({
+                                  ...current,
+                                  title: event.target.value,
+                                }))
+                              }
+                              placeholder="Titulo da tarefa"
+                              className="dashboard-input"
+                            />
+                            <textarea
+                              value={editingTask.description}
+                              onChange={(event) =>
+                                setEditingTask((current) => ({
+                                  ...current,
+                                  description: event.target.value,
+                                }))
+                              }
+                              placeholder="Descricao (opcional)"
+                              rows={2}
+                              className="dashboard-input dashboard-textarea"
+                            />
+                            <div className="dashboard-form-row">
+                              <select
+                                value={editingTask.priority}
+                                onChange={(event) =>
+                                  setEditingTask((current) => ({
+                                    ...current,
+                                    priority: event.target.value,
+                                  }))
+                                }
+                                className="dashboard-input dashboard-select"
+                              >
+                                <option value="low">Baixa</option>
+                                <option value="medium">Média</option>
+                                <option value="high">Alta</option>
+                              </select>
+                              <select
+                                value={editingTask.category}
+                                onChange={(event) =>
+                                  setEditingTask((current) => ({
+                                    ...current,
+                                    category: event.target.value,
+                                  }))
+                                }
+                                className="dashboard-input dashboard-select"
+                              >
+                                <option value="">Sem categoria</option>
+                                {categories.map((cat) => (
+                                  <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="dashboard-edit-actions">
+                                <button
+                                  type="submit"
+                                  className="dashboard-primary-btn"
+                                  disabled={isSavingEdit}
+                                >
+                                  {isSavingEdit ? "Salvando..." : "Salvar"}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="dashboard-secondary-btn"
+                                  onClick={cancelEditTask}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </div>
+                            {editingError && (
+                              <p className="dashboard-inline-error">
+                                {editingError}
+                              </p>
+                            )}
+                          </form>
+                        ) : (
+                          <>
+                            <p
+                              className={`dashboard-task-title ${task.completed ? "done" : ""}`}
+                            >
+                              {task.title}
+                            </p>
+                            {task.description && (
+                              <p className="dashboard-task-desc">
+                                {task.description}
+                              </p>
+                            )}
+
+                            {shareDisplayUsers.length > 0 && (
+                              <div className="dashboard-share-row">
+                                <span className="dashboard-share-label">
+                                  Compartilhado com:
+                                </span>
+                                {shareDisplayUsers.map((sharedUser) => (
+                                  <span
+                                    key={sharedUser.id}
+                                    className="dashboard-share-chip"
+                                  >
+                                    @{sharedUser.username}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            <div className="dashboard-task-badges">
+                              <span
+                                className={`dashboard-badge priority ${PRIORITY_CLASS[task.priority] ?? "medium"}`}
+                              >
+                                {PRIORITY_LABEL[task.priority]}
+                              </span>
+                              <span className="dashboard-badge category">
+                                {getCategoryName(task.category)}
+                              </span>
+                            </div>
+                          </>
+                        )}
                       </div>
                       <div className="dashboard-task-actions">
+                        {isTaskOwner(task) && editingTaskId !== task.id && (
+                          <button
+                            type="button"
+                            onClick={() => startEditTask(task)}
+                            className="dashboard-edit-trigger"
+                            title="Editar tarefa"
+                            aria-label="Editar tarefa"
+                          >
+                            ✏️
+                          </button>
+                        )}
                         {sharingTaskId === task.id ? (
                           <div className="dashboard-share-panel">
                             <input
