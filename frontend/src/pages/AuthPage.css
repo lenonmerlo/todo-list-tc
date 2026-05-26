@@ -1,7 +1,7 @@
 .auth-page {
   position: relative;
-  overflow-x: clip;
-  min-height: 100vh;
+  overflow: clip;
+  min-height: 100dvh;
   padding: clamp(14px, 2vw, 24px);
   background:
     radial-gradient(circle at 10% 14%, #ffd6ea 0%, transparent 44%),
