@@ -1,189 +1,218 @@
-# Backend - Todo List TC
+# Backend - Dia Leve
 
-## 1. Visão geral
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6.0-0C4B33?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.17-A30000?logo=django&logoColor=white)
+![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-9-0A9EDC?logo=pytest&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
-Este diretório contém o backend da aplicação **Todo List TC**, desenvolvido com Django e Django REST Framework.
+API REST do projeto **Dia Leve**, desenvolvida com Django + Django REST Framework, autenticacao JWT e persistencia em PostgreSQL.
 
-A API oferece:
+## 1. Funcionalidades
 
-- Cadastro de usuário.
-- Autenticação com JWT.
-- Endpoint para dados do usuário autenticado.
+- Cadastro de usuario.
+- Login JWT (access e refresh token).
+- Endpoint de usuario autenticado (`/api/auth/me/`).
 - CRUD de tarefas.
-- CRUD de categorias.
-- Compartilhamento de tarefas entre usuários.
-- Filtros, busca e paginação.
-- Integração externa com ViaCEP.
+- CRUD de categorias (isoladas por usuario).
+- Compartilhamento de tarefas com outros usuarios (`shared_with`).
+- Filtros por status, categoria e prioridade.
+- Busca textual em titulo/descricao.
+- Paginacao de resultados.
+- Integracao externa com ViaCEP.
 
-O frontend será documentado separadamente.
+## 2. Stack
 
-## 2. Tecnologias usadas
+- Python 3.13
+- Django 6.0.5
+- Django REST Framework 3.17.1
+- djangorestframework-simplejwt 5.5.1
+- PostgreSQL 16
+- Pytest + pytest-django
+- Docker / Docker Compose
 
-- Python
-- Django
-- Django REST Framework
-- Simple JWT
-- PostgreSQL
-- Pytest
-- Docker
-- Docker Compose
+## 3. Estrutura de pastas
 
-## 3. Estrutura das pastas principais
+```text
+backend/
+  accounts/
+    serializers.py
+    urls.py
+    views.py
+  tasks/
+    integrations.py
+    models.py
+    permissions.py
+    serializers.py
+    urls.py
+    views.py
+  core/
+    settings.py
+    urls.py
+  tests/
+    test_auth.py
+    test_tasks.py
+  manage.py
+  requirements.txt
+```
 
-- `accounts/`: registro, autenticação e endpoint de usuário autenticado.
-- `tasks/`: regras de negócio de tarefas e categorias, permissões, serializers, integração ViaCEP.
-- `core/`: configurações globais do Django (settings, URLs, WSGI/ASGI).
-- `tests/`: suíte de testes automatizados do backend com Pytest.
+## 4. Configuracao de ambiente
 
-## 4. Configuração do `.env` (usando `.env.example`)
-
-A partir da raiz do projeto, crie o arquivo de ambiente do backend:
+Crie o arquivo `.env` a partir do template:
 
 ```powershell
 Copy-Item .\backend\.env.example .\backend\.env
 ```
 
-Depois, ajuste os valores conforme necessário no arquivo `backend/.env`.
-
-Exemplo base (`backend/.env.example`):
+Exemplo base:
 
 ```env
 SECRET_KEY=your-secret-key-here
 DEBUG=True
 DB_NAME=todoapp
 DB_USER=postgres
-DB_PASSWORD=your-password
+DB_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
 ```
 
-## 5. Subir banco e backend via Docker Compose (pela raiz)
+## 5. Subir com Docker Compose (recomendado)
 
-Como o `docker-compose.yml` está na raiz do projeto, execute os comandos a partir dela:
+Na raiz `todo-app`:
 
 ```bash
 docker compose up --build db backend
 ```
 
-Ou, em background:
+Ou em background:
 
 ```bash
 docker compose up -d --build db backend
 ```
 
-Para acompanhar logs do backend:
-
-```bash
-docker compose logs -f backend
-```
-
-API disponível em:
+API local:
 
 - `http://localhost:8000/api/`
 
-## 6. Rodar migrações
+Admin:
 
-A partir da raiz do projeto:
+- `http://localhost:8000/admin/`
+
+## 6. Comandos uteis (raiz)
+
+Migracoes:
 
 ```bash
 docker compose exec backend python manage.py migrate
 ```
 
-## 7. Criar superusuário (opcional)
-
-A partir da raiz do projeto:
+Criar superusuario:
 
 ```bash
 docker compose exec backend python manage.py createsuperuser
 ```
 
-Painel admin:
-
-- `http://localhost:8000/admin/`
-
-## 8. Rodar testes com Pytest dentro do Docker
-
-A partir da raiz do projeto:
+Logs do backend:
 
 ```bash
-docker compose run --rm backend pytest tests/ -v
+docker compose logs -f backend
 ```
 
-Status atual da suíte do backend:
+## 7. Execucao sem Docker (opcional)
 
-- Última validação local: 17 testes passando com `docker compose run --rm backend pytest tests/ -v`.
-
-## 9. Rodar localmente fora do Docker
-
-A execução local depende de um PostgreSQL disponível na máquina. A validação principal do projeto foi feita via Docker Compose.
-
-Se preferir executar sem Docker:
-
-1. Acesse a pasta do backend.
+Requer PostgreSQL local disponivel.
 
 ```powershell
 cd .\backend
-```
-
-2. Crie/ative seu ambiente virtual.
-
-```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-3. Instale dependências.
-
-```bash
 pip install -r requirements.txt
 ```
 
-4. Configure o arquivo `.env` com **DB_HOST=localhost** (fora do Docker não use `db`).
-
-Exemplo:
+Ajuste o `.env` para ambiente local:
 
 ```env
 DB_HOST=localhost
 DB_PORT=5432
 ```
 
-5. Rode migrações e suba o servidor.
+Rode migracoes e servidor:
 
 ```bash
 python manage.py migrate
 python manage.py runserver
 ```
 
-## 10. Endpoints da API
+## 8. Dependencias principais
 
-Base URL local:
+Do `requirements.txt`:
+
+- Django==6.0.5
+- djangorestframework==3.17.1
+- djangorestframework_simplejwt==5.5.1
+- psycopg2-binary==2.9.12
+- pytest==9.0.3
+- pytest-django==4.12.0
+- requests==2.34.2
+
+## 9. Endpoints
+
+Base URL:
 
 - `http://localhost:8000/api`
 
-Rotas protegidas exigem o header:
+Header para rotas protegidas:
 
 ```text
 Authorization: Bearer <access_token>
 ```
 
-Autenticação:
+### Autenticacao
 
 - `POST /api/auth/register/`
 - `POST /api/auth/login/`
 - `POST /api/auth/token/refresh/`
 - `GET /api/auth/me/`
 
-Recursos:
+### Tarefas e categorias
 
 - `GET/POST /api/tasks/`
 - `GET/PATCH/PUT/DELETE /api/tasks/{id}/`
 - `GET/POST /api/categories/`
 - `GET/PATCH/PUT/DELETE /api/categories/{id}/`
+
+### Integracao CEP
+
 - `GET /api/address/{cep}/`
 
-## 11. Exemplos de payload JSON
+## 10. Modelos de dados
 
-### Registro (`POST /api/auth/register/`)
+### Category
+
+- `id`
+- `name` (max 100)
+- `owner` (usuario dono)
+- `created_at`
+
+### Task
+
+- `id`
+- `title` (max 255)
+- `description` (opcional)
+- `completed` (bool)
+- `priority`: `low` | `medium` | `high`
+- `due_date` (opcional)
+- `category` (opcional)
+- `owner`
+- `shared_with` (lista de usuarios)
+- `created_at`
+- `updated_at`
+
+## 11. Exemplos de payload
+
+Registro:
 
 ```json
 {
@@ -193,7 +222,7 @@ Recursos:
 }
 ```
 
-### Login (`POST /api/auth/login/`)
+Login:
 
 ```json
 {
@@ -202,7 +231,7 @@ Recursos:
 }
 ```
 
-### Categoria (`POST /api/categories/`)
+Categoria:
 
 ```json
 {
@@ -210,12 +239,12 @@ Recursos:
 }
 ```
 
-### Tarefa (`POST /api/tasks/`)
+Tarefa:
 
 ```json
 {
-  "title": "Finalizar relatório",
-  "description": "Entregar até o fim do dia",
+  "title": "Finalizar relatorio",
+  "description": "Entregar ate o fim do dia",
   "completed": false,
   "priority": "high",
   "due_date": "2026-05-30",
@@ -223,81 +252,90 @@ Recursos:
 }
 ```
 
-### Tarefa compartilhada (`POST /api/tasks/`)
+Tarefa compartilhada:
 
 ```json
 {
-  "title": "Preparar apresentação",
-  "description": "Slides da reunião semanal",
+  "title": "Preparar apresentacao",
+  "description": "Slides da reuniao semanal",
   "priority": "medium",
   "shared_with": [2, 3]
 }
 ```
 
-## 12. Exemplos de filtros
+## 12. Filtros e busca
 
-Filtros disponíveis em `GET /api/tasks/`:
+Endpoint: `GET /api/tasks/`
 
-- `completed`:
-  - `/api/tasks/?completed=true`
-- `category`:
-  - `/api/tasks/?category=1`
-- `priority`:
-  - `/api/tasks/?priority=high`
-- `search` (busca em título e descrição):
-  - `/api/tasks/?search=relatorio`
-- `page` (paginação):
-  - `/api/tasks/?page=2`
+- `completed=true|false`
+- `category=<id>`
+- `priority=low|medium|high`
+- `search=<termo>` (titulo e descricao)
+- `page=<numero>`
 
-Também é possível combinar filtros:
+Exemplo combinado:
 
-- `/api/tasks/?completed=false&priority=medium&search=reuniao&page=1`
+`/api/tasks/?completed=false&priority=medium&search=reuniao&page=1`
 
-## 13. Regras de autorização e segurança
+## 13. Regras de autorizacao
 
-- A API usa JWT (Simple JWT) como autenticação.
-- Endpoints de negócio exigem usuário autenticado.
+- API usa JWT.
+- Rotas de negocio exigem autenticacao.
 - Tarefas:
-  - Dono da tarefa pode visualizar, editar e deletar.
-  - Usuários em `shared_with` podem apenas visualizar.
+  - dono pode visualizar, editar e remover.
+  - usuario compartilhado pode apenas visualizar.
 - Categorias:
-  - São isoladas por usuário.
-  - Uma tarefa só pode referenciar categoria do usuário autenticado.
+  - sao isoladas por usuario.
+  - tarefa so aceita categoria do proprio usuario autenticado.
 
-## 14. Integração externa com ViaCEP
+## 14. Integracao ViaCEP
 
-- Implementação em `tasks/integrations.py`.
-- Endpoint da API: `GET /api/address/{cep}/`.
-- Exemplo de chamada: `GET /api/address/01001000/`.
-- Comportamento:
-  - Retorna dados de endereço quando o CEP é válido.
-  - Retorna 404 para CEP inexistente.
-  - Retorna 502 em falhas externas na consulta.
+Implementacao em `tasks/integrations.py`.
 
-## 15. Testes implementados
+Comportamento de `GET /api/address/{cep}/`:
 
-A suíte cobre os principais fluxos do backend, incluindo:
+- `200`: CEP valido.
+- `404`: CEP inexistente/invalido (erro de dominio tratado).
+- `502`: falha externa ao consultar ViaCEP.
 
-- Registro e login.
-- Falha de login com senha inválida.
-- CRUD de tarefas.
-- Criação de categorias.
-- Restrição de acesso sem autenticação.
-- Regras de compartilhamento de tarefas.
-- Restrição de categoria entre usuários.
-- Endpoint de endereço (ViaCEP) com cenários de sucesso e CEP não encontrado.
-- Serialização de detalhes de usuários compartilhados.
+## 15. Testes
 
-Observação:
+Rodar via Docker:
 
-- Os testes da integração externa usam **mock** para evitar dependência de internet.
+```bash
+docker compose run --rm backend pytest tests/ -v
+```
 
-## 16. Validação manual via Postman
+Cobertura funcional da suite:
 
-Além dos testes automatizados, foi realizada validação manual com Postman para:
+- autenticacao (registro/login/me),
+- erros de credencial,
+- CRUD de tarefas,
+- CRUD de categorias,
+- restricoes de permissao e compartilhamento,
+- validacao de categoria entre usuarios,
+- endpoint de CEP com sucesso e falha controlada.
 
-- Fluxo de autenticação JWT (register/login/me).
-- Operações de tarefas e categorias.
-- Aplicação das regras de autorização.
-- Filtros e paginação.
-- Consulta de CEP via endpoint de endereço.
+## 16. CI
+
+Pipeline em `.github/workflows/ci.yml`:
+
+- sobe PostgreSQL em servico do GitHub Actions,
+- instala dependencias do backend,
+- roda migracoes,
+- executa testes Pytest,
+- realiza build da imagem Docker do backend.
+
+## 17. Deploy/demo para avaliacao
+
+Conforme alinhado por email com o recrutamento:
+
+- nao ha ambiente corporativo disponibilizado para AWS/Azure,
+- entregar aplicacao dockerizada com README detalhado e uma abordagem aceita,
+- opcionalmente pode ser disponibilizada uma demo em ambiente gratuito.
+
+Essa estrategia aumenta a reproducibilidade do projeto para avaliacao tecnica.
+
+## 18. Autor
+
+Desenvolvido por Lenon Merlo para teste tecnico.
