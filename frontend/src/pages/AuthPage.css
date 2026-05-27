@@ -249,6 +249,49 @@
   gap: 14px;
 }
 
+.auth-password-wrapper {
+  position: relative;
+}
+
+.auth-password-input {
+  padding-right: 42px;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--app-text-muted);
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.auth-password-toggle:hover {
+  background: color-mix(in srgb, var(--app-primary) 14%, transparent 86%);
+  color: var(--app-primary-strong);
+}
+
+.auth-password-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--app-primary) 42%, transparent 58%);
+  outline-offset: 1px;
+}
+
+.auth-password-icon {
+  width: 17px;
+  height: 17px;
+}
+
 .auth-error {
   border: 1px solid color-mix(in srgb, #ef4444 40%, transparent 60%);
   border-radius: 12px;

@@ -64,6 +64,7 @@ function AuthPage() {
   const { login, register } = useAuth();
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState(initialForm);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -188,17 +189,91 @@ function AuthPage() {
               />
             )}
 
-            <FormField
-              label="Senha"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={updateField}
-              autoComplete={
-                isRegisterMode ? "new-password" : "current-password"
-              }
-              minLenght={6}
-            />
+            <div className="form-field auth-password-field">
+              <label className="form-field-label" htmlFor="auth-password">
+                Senha
+              </label>
+              <div className="auth-password-wrapper">
+                <input
+                  id="auth-password"
+                  className="form-field-input auth-password-input"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={updateField}
+                  autoComplete={
+                    isRegisterMode ? "new-password" : "current-password"
+                  }
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  className="auth-password-toggle"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? (
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="auth-password-icon"
+                    >
+                      <path
+                        d="M3 3l18 18"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M10.58 10.58a2 2 0 102.84 2.84"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M9.88 5.09A10.94 10.94 0 0112 4.9c5.05 0 8.27 3.11 9.5 7.1a10.6 10.6 0 01-4.27 5.8"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M6.6 6.62A11.38 11.38 0 002.5 12c1.24 4 4.45 7.1 9.5 7.1 1.4 0 2.66-.24 3.8-.66"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="auth-password-icon"
+                    >
+                      <path
+                        d="M2.5 12C3.74 8 6.95 4.9 12 4.9c5.05 0 8.27 3.11 9.5 7.1-1.23 3.99-4.45 7.1-9.5 7.1-5.05 0-8.26-3.1-9.5-7.1z"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="2.6"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
 
             {error && <p className="auth-error">{error}</p>}
 
