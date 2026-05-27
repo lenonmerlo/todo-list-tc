@@ -267,3 +267,12 @@ todo-app/
 ## 14. Autor
 
 Desenvolvido por Lenon Merlo para teste tecnico.
+
+## 15. Proximas evolucoes planejadas
+
+- Recuperacao de senha via email (token de reset + SMTP)
+- Notificacoes por email quando tarefa vence
+- Subtarefas
+- App mobile com React Native (reaproveitando a mesma API)
+- PWA para instalacao no celular
+- Modo colaborativo em tempo real via WebSocket
