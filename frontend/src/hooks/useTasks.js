@@ -55,7 +55,12 @@ export function useTasks() {
         return;
       }
 
-      setTasks(res.data.results);
+      const sortedTasks = [...(res.data.results || [])].sort((a, b) => {
+        if (a.completed === b.completed) return 0;
+        return a.completed ? 1 : -1;
+      });
+
+      setTasks(sortedTasks);
       setCount(res.data.count);
     } catch (err) {
       if (err?.code === "ERR_CANCELED") {
