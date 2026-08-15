@@ -27,7 +27,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsTaskOwnerOrReadOnly)
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('title', 'description')
-    ordering_fields = ('created_at', 'due_date', 'priority')
+    ordering_fields = ('created_at', 'due_date', 'due_time', 'priority', 'status')
 
     def get_queryset(self):
         user = self.request.user

@@ -14,6 +14,72 @@ import "./DashboardPage.css";
 
 const PRIORITY_LABEL = { low: "Baixa", medium: "Média", high: "Alta" };
 const PRIORITY_CLASS = { low: "low", medium: "medium", high: "high" };
+const STATUS_LABEL = {
+  todo: "A fazer",
+  in_progress: "Em andamento",
+  waiting: "Aguardando",
+  done: "Concluída",
+};
+const STATUS_CLASS = {
+  todo: "todo",
+  in_progress: "in-progress",
+  waiting: "waiting",
+  done: "done",
+};
+const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
+function formatApiError(err, fallback) {
+  const data = err?.response?.data;
+
+  if (!data) return fallback;
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.join(" ");
+  }
+
+  if (typeof data === "object") {
+    const messages = [];
+    Object.entries(data).forEach(([field, value]) => {
+      if (Array.isArray(value)) {
+        messages.push(`${field}: ${value.join(" ")}`);
+        return;
+      }
+
+      if (typeof value === "string") {
+        messages.push(`${field}: ${value}`);
+      }
+    });
+
+    if (messages.length > 0) {
+      return messages.join(" | ");
+    }
+  }
+
+  return fallback;
+}
+
+function toTaskPayload(task) {
+  const estimatedRaw = String(task.estimated_minutes ?? "").trim();
+
+  return {
+    title: task.title.trim(),
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    due_date: task.due_date || null,
+    due_time: task.due_time || null,
+    estimated_minutes: estimatedRaw ? Number(estimatedRaw) : null,
+    category: task.category ? Number(task.category) : null,
+  };
+}
 
 function DashboardPage() {
   const { user, logout } = useAuth();
@@ -38,7 +104,11 @@ function DashboardPage() {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
+    status: "todo",
     priority: "medium",
+    due_date: "",
+    due_time: "",
+    estimated_minutes: "",
     category: "",
   });
   const [newCategory, setNewCategory] = useState("");
@@ -51,9 +121,15 @@ function DashboardPage() {
   const [editingTask, setEditingTask] = useState({
     title: "",
     description: "",
+    status: "todo",
     priority: "medium",
+    due_date: "",
+    due_time: "",
+    estimated_minutes: "",
     category: "",
   });
+  const [createError, setCreateError] = useState("");
+  const [isSavingCreate, setIsSavingCreate] = useState(false);
   const [editingError, setEditingError] = useState("");
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
@@ -61,20 +137,29 @@ function DashboardPage() {
 
   async function handleCreateTask(e) {
     e.preventDefault();
-    if (!newTask.title.trim()) return;
-    await createTask({
-      title: newTask.title,
-      description: newTask.description,
-      priority: newTask.priority,
-      ...(newTask.category ? { category: newTask.category } : {}),
-    });
-    setNewTask({
-      title: "",
-      description: "",
-      priority: "medium",
-      category: "",
-    });
-    setShowForm(false);
+    if (!newTask.title.trim() || isSavingCreate) return;
+
+    setIsSavingCreate(true);
+    setCreateError("");
+
+    try {
+      await createTask(toTaskPayload(newTask));
+      setNewTask({
+        title: "",
+        description: "",
+        status: "todo",
+        priority: "medium",
+        due_date: "",
+        due_time: "",
+        estimated_minutes: "",
+        category: "",
+      });
+      setShowForm(false);
+    } catch (err) {
+      setCreateError(formatApiError(err, "Nao foi possivel criar a tarefa."));
+    } finally {
+      setIsSavingCreate(false);
+    }
   }
 
   async function handleCreateCategory(e) {
@@ -116,7 +201,12 @@ function DashboardPage() {
     setEditingTask({
       title: task.title || "",
       description: task.description || "",
+      status: task.status || "todo",
       priority: task.priority || "medium",
+      due_date: task.due_date || "",
+      due_time: task.due_time ? String(task.due_time).slice(0, 5) : "",
+      estimated_minutes:
+        task.estimated_minutes != null ? String(task.estimated_minutes) : "",
       category: task.category ? String(task.category) : "",
     });
   }
@@ -127,12 +217,18 @@ function DashboardPage() {
     setEditingTask({
       title: "",
       description: "",
+      status: "todo",
       priority: "medium",
+      due_date: "",
+      due_time: "",
+      estimated_minutes: "",
       category: "",
     });
   }
 
   async function saveEditedTask(taskId) {
+    if (isSavingEdit) return;
+
     const title = editingTask.title.trim();
     if (!title) {
       setEditingError("Informe um titulo para a tarefa.");
@@ -143,19 +239,30 @@ function DashboardPage() {
     setEditingError("");
 
     try {
-      await updateTask(taskId, {
-        title,
-        description: editingTask.description,
-        priority: editingTask.priority,
-        category: editingTask.category ? Number(editingTask.category) : null,
-      });
+      await updateTask(taskId, toTaskPayload({ ...editingTask, title }));
       cancelEditTask();
-    } catch {
-      setEditingError("Nao foi possivel salvar as alteracoes.");
+    } catch (err) {
+      setEditingError(
+        formatApiError(err, "Nao foi possivel salvar as alteracoes."),
+      );
     } finally {
       setIsSavingEdit(false);
     }
   }
+
+  function formatDueDate(dueDate) {
+    if (!dueDate) return null;
+    const parsed = new Date(`${dueDate}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return dueDate;
+    return dateFormatter.format(parsed);
+  }
+
+  function formatDueTime(dueTime) {
+    if (!dueTime) return null;
+    return String(dueTime).slice(0, 5);
+  }
+
+  const todayIsoDate = new Date().toISOString().slice(0, 10);
 
   function getShareDisplayUsers(task) {
     const viewerUsername = (user?.username || "").toLowerCase();
@@ -362,35 +469,143 @@ function DashboardPage() {
                   className="dashboard-input dashboard-textarea"
                 />
                 <div className="dashboard-form-row">
-                  <select
-                    value={newTask.priority}
-                    onChange={(e) =>
-                      setNewTask((t) => ({ ...t, priority: e.target.value }))
-                    }
-                    className="dashboard-input dashboard-select"
-                  >
-                    <option value="low">Baixa</option>
-                    <option value="medium">Média</option>
-                    <option value="high">Alta</option>
-                  </select>
-                  <select
-                    value={newTask.category}
-                    onChange={(e) =>
-                      setNewTask((t) => ({ ...t, category: e.target.value }))
-                    }
-                    className="dashboard-input dashboard-select"
-                  >
-                    <option value="">Sem categoria</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className="dashboard-primary-btn">
-                    Salvar
-                  </button>
+                  <div className="dashboard-form-field">
+                    <label
+                      className="dashboard-field-label"
+                      htmlFor="create-status"
+                    >
+                      Estado
+                    </label>
+                    <select
+                      id="create-status"
+                      value={newTask.status}
+                      onChange={(e) =>
+                        setNewTask((t) => ({ ...t, status: e.target.value }))
+                      }
+                      className="dashboard-input dashboard-select"
+                    >
+                      <option value="todo">A fazer</option>
+                      <option value="in_progress">Em andamento</option>
+                      <option value="waiting">Aguardando</option>
+                      <option value="done">Concluída</option>
+                    </select>
+                  </div>
+                  <div className="dashboard-form-field">
+                    <label
+                      className="dashboard-field-label"
+                      htmlFor="create-priority"
+                    >
+                      Prioridade
+                    </label>
+                    <select
+                      id="create-priority"
+                      value={newTask.priority}
+                      onChange={(e) =>
+                        setNewTask((t) => ({ ...t, priority: e.target.value }))
+                      }
+                      className="dashboard-input dashboard-select"
+                    >
+                      <option value="low">Baixa</option>
+                      <option value="medium">Média</option>
+                      <option value="high">Alta</option>
+                    </select>
+                  </div>
+                  <div className="dashboard-form-field">
+                    <label
+                      className="dashboard-field-label"
+                      htmlFor="create-category"
+                    >
+                      Categoria
+                    </label>
+                    <select
+                      id="create-category"
+                      value={newTask.category}
+                      onChange={(e) =>
+                        setNewTask((t) => ({ ...t, category: e.target.value }))
+                      }
+                      className="dashboard-input dashboard-select"
+                    >
+                      <option value="">Sem categoria</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="dashboard-form-field">
+                    <label
+                      className="dashboard-field-label"
+                      htmlFor="create-due-date"
+                    >
+                      Prazo
+                    </label>
+                    <input
+                      id="create-due-date"
+                      type="date"
+                      value={newTask.due_date}
+                      onChange={(e) =>
+                        setNewTask((t) => ({ ...t, due_date: e.target.value }))
+                      }
+                      className="dashboard-input"
+                      aria-label="Data de vencimento"
+                    />
+                  </div>
+                  <div className="dashboard-form-field">
+                    <label
+                      className="dashboard-field-label"
+                      htmlFor="create-due-time"
+                    >
+                      Horário
+                    </label>
+                    <input
+                      id="create-due-time"
+                      type="time"
+                      value={newTask.due_time}
+                      onChange={(e) =>
+                        setNewTask((t) => ({ ...t, due_time: e.target.value }))
+                      }
+                      className="dashboard-input"
+                      aria-label="Horario de vencimento"
+                    />
+                  </div>
+                  <div className="dashboard-form-field">
+                    <label
+                      className="dashboard-field-label"
+                      htmlFor="create-estimated"
+                    >
+                      Duração (min)
+                    </label>
+                    <input
+                      id="create-estimated"
+                      type="number"
+                      min="1"
+                      max="1440"
+                      value={newTask.estimated_minutes}
+                      onChange={(e) =>
+                        setNewTask((t) => ({
+                          ...t,
+                          estimated_minutes: e.target.value,
+                        }))
+                      }
+                      placeholder="Duracao (min)"
+                      className="dashboard-input"
+                      aria-label="Duracao estimada em minutos"
+                    />
+                  </div>
+                  <div className="dashboard-form-submit">
+                    <button
+                      type="submit"
+                      className="dashboard-primary-btn"
+                      disabled={isSavingCreate}
+                    >
+                      {isSavingCreate ? "Salvando..." : "Salvar"}
+                    </button>
+                  </div>
                 </div>
+                {createError && (
+                  <p className="dashboard-inline-error">{createError}</p>
+                )}
               </form>
             )}
 
@@ -406,11 +621,18 @@ function DashboardPage() {
               <ul className="dashboard-task-list">
                 {tasks.map((task) => {
                   const shareDisplayUsers = getShareDisplayUsers(task);
+                  const isOverdue =
+                    !task.completed &&
+                    Boolean(task.due_date) &&
+                    String(task.due_date) < todayIsoDate;
+                  const dueDateText = formatDueDate(task.due_date);
+                  const dueTimeText = formatDueTime(task.due_time);
+                  const hasEstimated = task.estimated_minutes != null;
 
                   return (
                     <li
                       key={task.id}
-                      className={`dashboard-task-item ${task.completed ? "completed" : ""}`}
+                      className={`dashboard-task-item ${task.completed ? "completed" : ""} ${isOverdue ? "overdue" : ""}`}
                     >
                       <input
                         type="checkbox"
@@ -451,37 +673,147 @@ function DashboardPage() {
                               className="dashboard-input dashboard-textarea"
                             />
                             <div className="dashboard-form-row">
-                              <select
-                                value={editingTask.priority}
-                                onChange={(event) =>
-                                  setEditingTask((current) => ({
-                                    ...current,
-                                    priority: event.target.value,
-                                  }))
-                                }
-                                className="dashboard-input dashboard-select"
-                              >
-                                <option value="low">Baixa</option>
-                                <option value="medium">Média</option>
-                                <option value="high">Alta</option>
-                              </select>
-                              <select
-                                value={editingTask.category}
-                                onChange={(event) =>
-                                  setEditingTask((current) => ({
-                                    ...current,
-                                    category: event.target.value,
-                                  }))
-                                }
-                                className="dashboard-input dashboard-select"
-                              >
-                                <option value="">Sem categoria</option>
-                                {categories.map((cat) => (
-                                  <option key={cat.id} value={cat.id}>
-                                    {cat.name}
+                              <div className="dashboard-form-field">
+                                <label
+                                  className="dashboard-field-label"
+                                  htmlFor={`edit-status-${task.id}`}
+                                >
+                                  Estado
+                                </label>
+                                <select
+                                  id={`edit-status-${task.id}`}
+                                  value={editingTask.status}
+                                  onChange={(event) =>
+                                    setEditingTask((current) => ({
+                                      ...current,
+                                      status: event.target.value,
+                                    }))
+                                  }
+                                  className="dashboard-input dashboard-select"
+                                >
+                                  <option value="todo">A fazer</option>
+                                  <option value="in_progress">
+                                    Em andamento
                                   </option>
-                                ))}
-                              </select>
+                                  <option value="waiting">Aguardando</option>
+                                  <option value="done">Concluída</option>
+                                </select>
+                              </div>
+                              <div className="dashboard-form-field">
+                                <label
+                                  className="dashboard-field-label"
+                                  htmlFor={`edit-priority-${task.id}`}
+                                >
+                                  Prioridade
+                                </label>
+                                <select
+                                  id={`edit-priority-${task.id}`}
+                                  value={editingTask.priority}
+                                  onChange={(event) =>
+                                    setEditingTask((current) => ({
+                                      ...current,
+                                      priority: event.target.value,
+                                    }))
+                                  }
+                                  className="dashboard-input dashboard-select"
+                                >
+                                  <option value="low">Baixa</option>
+                                  <option value="medium">Média</option>
+                                  <option value="high">Alta</option>
+                                </select>
+                              </div>
+                              <div className="dashboard-form-field">
+                                <label
+                                  className="dashboard-field-label"
+                                  htmlFor={`edit-category-${task.id}`}
+                                >
+                                  Categoria
+                                </label>
+                                <select
+                                  id={`edit-category-${task.id}`}
+                                  value={editingTask.category}
+                                  onChange={(event) =>
+                                    setEditingTask((current) => ({
+                                      ...current,
+                                      category: event.target.value,
+                                    }))
+                                  }
+                                  className="dashboard-input dashboard-select"
+                                >
+                                  <option value="">Sem categoria</option>
+                                  {categories.map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                      {cat.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="dashboard-form-field">
+                                <label
+                                  className="dashboard-field-label"
+                                  htmlFor={`edit-due-date-${task.id}`}
+                                >
+                                  Prazo
+                                </label>
+                                <input
+                                  id={`edit-due-date-${task.id}`}
+                                  type="date"
+                                  value={editingTask.due_date}
+                                  onChange={(event) =>
+                                    setEditingTask((current) => ({
+                                      ...current,
+                                      due_date: event.target.value,
+                                    }))
+                                  }
+                                  className="dashboard-input"
+                                  aria-label="Data de vencimento"
+                                />
+                              </div>
+                              <div className="dashboard-form-field">
+                                <label
+                                  className="dashboard-field-label"
+                                  htmlFor={`edit-due-time-${task.id}`}
+                                >
+                                  Horário
+                                </label>
+                                <input
+                                  id={`edit-due-time-${task.id}`}
+                                  type="time"
+                                  value={editingTask.due_time}
+                                  onChange={(event) =>
+                                    setEditingTask((current) => ({
+                                      ...current,
+                                      due_time: event.target.value,
+                                    }))
+                                  }
+                                  className="dashboard-input"
+                                  aria-label="Horario de vencimento"
+                                />
+                              </div>
+                              <div className="dashboard-form-field">
+                                <label
+                                  className="dashboard-field-label"
+                                  htmlFor={`edit-estimated-${task.id}`}
+                                >
+                                  Duração (min)
+                                </label>
+                                <input
+                                  id={`edit-estimated-${task.id}`}
+                                  type="number"
+                                  min="1"
+                                  max="1440"
+                                  value={editingTask.estimated_minutes}
+                                  onChange={(event) =>
+                                    setEditingTask((current) => ({
+                                      ...current,
+                                      estimated_minutes: event.target.value,
+                                    }))
+                                  }
+                                  placeholder="Duracao (min)"
+                                  className="dashboard-input"
+                                  aria-label="Duracao estimada em minutos"
+                                />
+                              </div>
                               <div className="dashboard-edit-actions">
                                 <button
                                   type="submit"
@@ -536,6 +868,11 @@ function DashboardPage() {
 
                             <div className="dashboard-task-badges">
                               <span
+                                className={`dashboard-badge status ${STATUS_CLASS[task.status] ?? "todo"}`}
+                              >
+                                Estado: {STATUS_LABEL[task.status] ?? "A fazer"}
+                              </span>
+                              <span
                                 className={`dashboard-badge priority ${PRIORITY_CLASS[task.priority] ?? "medium"}`}
                               >
                                 {PRIORITY_LABEL[task.priority]}
@@ -543,6 +880,26 @@ function DashboardPage() {
                               <span className="dashboard-badge category">
                                 {getCategoryName(task.category)}
                               </span>
+                              {dueDateText && (
+                                <span className="dashboard-badge due-date">
+                                  Prazo: {dueDateText}
+                                </span>
+                              )}
+                              {dueTimeText && (
+                                <span className="dashboard-badge due-time">
+                                  Horario: {dueTimeText}
+                                </span>
+                              )}
+                              {hasEstimated && (
+                                <span className="dashboard-badge duration">
+                                  Duracao: {task.estimated_minutes} min
+                                </span>
+                              )}
+                              {isOverdue && (
+                                <span className="dashboard-badge overdue-text">
+                                  Atrasada
+                                </span>
+                              )}
                             </div>
                           </>
                         )}

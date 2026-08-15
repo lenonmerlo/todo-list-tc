@@ -36,11 +36,30 @@ def test_create_task(auth_client):
     response = auth_client.post('/api/tasks/', {
         'title': 'Test task',
         'description': 'Test description',
-        'priority': 'high'
+        'priority': 'high',
+        'status': 'in_progress',
+        'due_date': '2026-09-01',
+        'due_time': '09:30',
+        'estimated_minutes': 90,
     }, format='json')
     assert response.status_code == 201
     assert response.data['title'] == 'Test task'
     assert response.data['completed'] == False
+    assert response.data['status'] == 'in_progress'
+    assert response.data['due_date'] == '2026-09-01'
+    assert response.data['due_time'].startswith('09:30')
+    assert response.data['estimated_minutes'] == 90
+
+
+@pytest.mark.django_db
+def test_create_task_rejects_invalid_estimated_minutes(auth_client):
+    response = auth_client.post('/api/tasks/', {
+        'title': 'Invalid duration task',
+        'estimated_minutes': 0,
+    }, format='json')
+
+    assert response.status_code == 400
+    assert 'estimated_minutes' in response.data
 
 
 @pytest.mark.django_db
@@ -60,6 +79,46 @@ def test_complete_task(auth_client, user):
     }, format='json')
     assert response.status_code == 200
     assert response.data['completed'] == True
+    assert response.data['status'] == 'done'
+
+
+@pytest.mark.django_db
+def test_status_done_sets_completed_true(auth_client, user):
+    task = Task.objects.create(title='Task', owner=user, completed=False, status='todo')
+
+    response = auth_client.patch(f'/api/tasks/{task.id}/', {
+        'status': 'done'
+    }, format='json')
+
+    assert response.status_code == 200
+    assert response.data['status'] == 'done'
+    assert response.data['completed'] is True
+
+
+@pytest.mark.django_db
+def test_status_not_done_sets_completed_false(auth_client, user):
+    task = Task.objects.create(title='Task', owner=user, completed=True, status='done')
+
+    response = auth_client.patch(f'/api/tasks/{task.id}/', {
+        'status': 'waiting'
+    }, format='json')
+
+    assert response.status_code == 200
+    assert response.data['status'] == 'waiting'
+    assert response.data['completed'] is False
+
+
+@pytest.mark.django_db
+def test_completed_false_sets_status_todo(auth_client, user):
+    task = Task.objects.create(title='Task', owner=user, completed=True, status='done')
+
+    response = auth_client.patch(f'/api/tasks/{task.id}/', {
+        'completed': False
+    }, format='json')
+
+    assert response.status_code == 200
+    assert response.data['completed'] is False
+    assert response.data['status'] == 'todo'
 
 
 @pytest.mark.django_db

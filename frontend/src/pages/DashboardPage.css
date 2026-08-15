@@ -326,9 +326,32 @@
 
 .dashboard-form-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(120px, 180px)) auto;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
   gap: 10px;
-  align-items: center;
+  align-items: end;
+}
+
+.dashboard-form-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dashboard-field-label {
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-form-submit {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+}
+
+.dashboard-form-submit .dashboard-primary-btn {
+  min-width: 128px;
 }
 
 .dashboard-error {
@@ -380,6 +403,11 @@
   opacity: 0.68;
 }
 
+.dashboard-task-item.overdue {
+  border-color: color-mix(in srgb, #ef4444 42%, var(--app-surface-border) 58%);
+  box-shadow: 0 10px 24px color-mix(in srgb, #ef4444 18%, transparent 82%);
+}
+
 .dashboard-checkbox {
   margin-top: 2px;
   width: 16px;
@@ -425,6 +453,8 @@
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  align-self: end;
+  flex-wrap: wrap;
 }
 
 .dashboard-secondary-btn {
@@ -494,6 +524,42 @@
 .dashboard-badge.category {
   color: var(--app-chip-text);
   background: var(--app-chip-bg);
+}
+
+.dashboard-badge.status.todo {
+  color: #1f3c88;
+  background: #dbeafe;
+}
+
+.dashboard-badge.status.in-progress {
+  color: #1f4d2f;
+  background: #dcfce7;
+}
+
+.dashboard-badge.status.waiting {
+  color: #7c2d12;
+  background: #ffedd5;
+}
+
+.dashboard-badge.status.done {
+  color: #14532d;
+  background: #d1fae5;
+}
+
+.dashboard-badge.due-date,
+.dashboard-badge.due-time,
+.dashboard-badge.duration {
+  color: var(--app-text);
+  background: color-mix(
+    in srgb,
+    var(--app-surface) 78%,
+    var(--app-chip-bg) 22%
+  );
+}
+
+.dashboard-badge.overdue-text {
+  color: #991b1b;
+  background: #fee2e2;
 }
 
 .dashboard-delete-btn {
@@ -672,11 +738,12 @@
     grid-template-columns: 1fr;
   }
 
+  .dashboard-form-submit,
   .dashboard-edit-actions {
     justify-content: stretch;
-    flex-wrap: wrap;
   }
 
+  .dashboard-form-submit .dashboard-primary-btn,
   .dashboard-edit-actions .dashboard-primary-btn,
   .dashboard-edit-actions .dashboard-secondary-btn {
     width: 100%;
@@ -710,6 +777,12 @@
     right: 4%;
     bottom: 16%;
     opacity: 0.7;
+  }
+}
+
+@media (max-width: 1280px) {
+  .dashboard-form-row {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
   }
 }
 

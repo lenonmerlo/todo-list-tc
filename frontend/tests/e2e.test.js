@@ -25,6 +25,15 @@ async function typeInto(driver, locator, text) {
   await el.sendKeys(text);
 }
 
+function isoDateDaysFromNow(offsetDays) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 async function ensureAuthPage(driver) {
   await driver.get(BASE_URL);
 
@@ -142,6 +151,22 @@ describe("Dia Leve — E2E", () => {
       "Tarefa Selenium",
     );
 
+    await typeInto(
+      driver,
+      By.css('input[aria-label="Data de vencimento"]'),
+      isoDateDaysFromNow(1),
+    );
+    await typeInto(
+      driver,
+      By.css('input[aria-label="Horario de vencimento"]'),
+      "09:30",
+    );
+    await typeInto(
+      driver,
+      By.css('input[aria-label="Duracao estimada em minutos"]'),
+      "45",
+    );
+
     const salvarBtn = await waitAndFind(
       driver,
       By.xpath("//button[contains(text(),'Salvar')]"),
@@ -150,6 +175,75 @@ describe("Dia Leve — E2E", () => {
 
     await driver.wait(
       until.elementLocated(By.xpath("//*[contains(text(),'Tarefa Selenium')]")),
+      8000,
+    );
+
+    await waitAndFind(
+      driver,
+      By.xpath("//*[contains(text(),'Estado:')]"),
+      8000,
+    );
+    await waitAndFind(driver, By.xpath("//*[contains(text(),'Prazo:')]"), 8000);
+    await waitAndFind(
+      driver,
+      By.xpath("//*[contains(text(),'Duracao: 45 min')]"),
+      8000,
+    );
+  }, 30000);
+
+  test("7. editar tarefa com novos campos", async () => {
+    const editBtn = await waitAndFind(
+      driver,
+      By.css(".dashboard-edit-trigger"),
+    );
+    await editBtn.click();
+
+    await typeInto(
+      driver,
+      By.css('input[aria-label="Duracao estimada em minutos"]'),
+      "60",
+    );
+
+    const salvarBtn = await waitAndFind(
+      driver,
+      By.xpath("//button[contains(text(),'Salvar')]"),
+    );
+    await salvarBtn.click();
+
+    await waitAndFind(
+      driver,
+      By.xpath("//*[contains(text(),'Duracao: 60 min')]"),
+      8000,
+    );
+  }, 30000);
+
+  test("8. exibe tarefa atrasada", async () => {
+    const novaBtn = await waitAndFind(
+      driver,
+      By.xpath("//button[contains(text(),'Nova tarefa')]"),
+    );
+    await novaBtn.click();
+
+    await typeInto(
+      driver,
+      By.css('input[placeholder="Título da tarefa"]'),
+      "Tarefa Atrasada Selenium",
+    );
+    await typeInto(
+      driver,
+      By.css('input[aria-label="Data de vencimento"]'),
+      isoDateDaysFromNow(-1),
+    );
+
+    const salvarBtn = await waitAndFind(
+      driver,
+      By.xpath("//button[contains(text(),'Salvar')]"),
+    );
+    await salvarBtn.click();
+
+    await waitAndFind(
+      driver,
+      By.xpath("//*[contains(text(),'Atrasada')]"),
       8000,
     );
   }, 30000);
